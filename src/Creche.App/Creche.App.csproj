@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>CrecheManager</AssemblyName>
+    <RootNamespace>Creche.App</RootNamespace>
+    <ApplicationIcon>Resources\Images\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Creche.Infrastructure\Creche.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Fonts\*.ttf" />
+    <Resource Include="Resources\Images\*.png" />
+    <Resource Include="Resources\Images\*.ico" />
+    <EmbeddedResource Include="Resources\Languages\*.json" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

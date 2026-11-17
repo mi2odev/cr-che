@@ -1,0 +1,204 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Creche.App.Controls"
+                    xmlns:loc="clr-namespace:Creche.App.Services"
+                    xmlns:vm="clr-namespace:Creche.App.ViewModels">
+    <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+        <DockPanel Margin="26,20,26,0">
+            <TextBlock DockPanel.Dock="Top" Text="{loc:T Nav.settings}" Style="{StaticResource H1}" Margin="0,0,0,10" />
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,0,1" Margin="0,0,0,14">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Settings.Creche}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=creche}" Visibility="{Binding IsAdmin, Converter={StaticResource Visible}}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Settings.Fees}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=fees}" Visibility="{Binding IsAdmin, Converter={StaticResource Visible}}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Settings.Receipt}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=receipt}" Visibility="{Binding IsAdmin, Converter={StaticResource Visible}}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Settings.Backup}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=backup}" Visibility="{Binding IsAdmin, Converter={StaticResource Visible}}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Settings.Appearance}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=appearance}" />
+                </StackPanel>
+            </Border>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Margin="0,0,0,20">
+                <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=creche}">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Creche}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Left" Margin="0,0,20,0">
+                                    <TextBlock Text="{loc:T Settings.Logo}" Style="{StaticResource Label}" />
+                                    <c:ImagePicker FileName="{Binding Settings.LogoFile, Mode=TwoWay}" PreviewSize="120" MaxPixels="600" />
+                                </StackPanel>
+                                <StackPanel>
+                <c:Field Label="{loc:T Settings.Name}">
+                    <TextBox Text="{Binding Settings.Name}" />
+                </c:Field>
+                <c:Field Label="{loc:T Common.Address}">
+                    <TextBox Text="{Binding Settings.Address}" />
+                </c:Field>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                <c:Field Label="{loc:T Common.Phone}">
+                    <TextBox Text="{Binding Settings.Phone}" />
+                </c:Field>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                <c:Field Label="{loc:T Settings.Currency}">
+                    <TextBox Text="{Binding Settings.Currency}" />
+                </c:Field>
+                    </StackPanel>
+                </Grid>
+                <c:Field Label="{loc:T Settings.SchoolYear}">
+                    <TextBox Text="{Binding Settings.SchoolYear}" />
+                </c:Field>
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Hours}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                <c:Field Label="{loc:T Settings.Opening}">
+                    <TextBox Text="{Binding OpeningTime}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.LateGrace}">
+                    <TextBox Text="{Binding Settings.LatePickupGraceMinutes, Converter={StaticResource Int}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.LateFee}">
+                    <TextBox Text="{Binding Settings.LatePickupFeePerBlock, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                <c:Field Label="{loc:T Settings.Closing}">
+                    <TextBox Text="{Binding ClosingTime}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.LateBlock}">
+                    <TextBox Text="{Binding Settings.LatePickupBlockMinutes, Converter={StaticResource Int}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                        <CheckBox Content="{loc:T Settings.LateEnabled}" IsChecked="{Binding Settings.LatePickupEnabled}" Margin="0,22,0,0" />
+                    </StackPanel>
+                </Grid>
+                            <TextBlock Text="{loc:T Settings.LateHelp}" Style="{StaticResource Muted}" />
+                        </StackPanel>
+                    </Border>
+                    <Button Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" c:Ico.Kind="save" HorizontalAlignment="Left" MinWidth="130" />
+                </StackPanel>
+                <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=fees}">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Fees}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                <c:Field Label="{loc:T Settings.RegistrationFee}">
+                    <TextBox Text="{Binding Settings.RegistrationFee, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.Discount2}">
+                    <TextBox Text="{Binding Settings.SecondChildDiscountPercent, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.DueDay}">
+                    <TextBox Text="{Binding Settings.PaymentDueDay, Converter={StaticResource Int}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                <c:Field Label="{loc:T Settings.ReEnrolmentFee}">
+                    <TextBox Text="{Binding Settings.ReEnrolmentFee, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.Discount3}">
+                    <TextBox Text="{Binding Settings.ThirdChildDiscountPercent, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                    </StackPanel>
+                </Grid>
+                            <TextBlock Text="{loc:T Settings.DiscountHelp}" Style="{StaticResource Muted}" Margin="0,0,0,10" />
+                <CheckBox Content="{loc:T Settings.BlockWhenFull}" IsChecked="{Binding Settings.BlockWhenGroupFull}" Margin="0,0,0,10" />
+                            <TextBlock Text="{loc:T Settings.BlockHelp}" Style="{StaticResource Muted}" />
+                            <TextBlock Text="{loc:T Settings.PlansWhere}" Style="{StaticResource Muted}" Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Button Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" c:Ico.Kind="save" HorizontalAlignment="Left" MinWidth="130" />
+                </StackPanel>
+                <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=receipt}">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Receipt}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <c:Field Label="{loc:T Settings.ReceiptHeader}">
+                    <TextBox Text="{Binding Settings.ReceiptHeader}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.ReceiptFooter}">
+                    <TextBox Text="{Binding Settings.ReceiptFooter}" />
+                </c:Field>
+                <c:Field Label="{loc:T Settings.ReceiptPaper}">
+                    <ComboBox ItemsSource="{Binding Papers}" SelectedItem="{Binding Settings.ReceiptPaper}" Width="120" HorizontalAlignment="Left" />
+                </c:Field>
+                <CheckBox Content="{loc:T Settings.ReceiptShowLogo}" IsChecked="{Binding Settings.ReceiptShowLogo}" Margin="0,0,0,10" />
+                <CheckBox Content="{loc:T Settings.ReceiptShowBalance}" IsChecked="{Binding Settings.ReceiptShowBalance}" Margin="0,0,0,10" />
+                        </StackPanel>
+                    </Border>
+                    <Button Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" c:Ico.Kind="save" HorizontalAlignment="Left" MinWidth="130" />
+                </StackPanel>
+                <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=backup}">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Backup}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <CheckBox Content="{loc:T Settings.AutoBackup}" IsChecked="{Binding Settings.AutoBackupEnabled}" Margin="0,0,0,10" />
+                <c:Field Label="{loc:T Settings.Retention}" Width="200" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Settings.BackupRetentionCount, Converter={StaticResource Int}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                    <Button Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" c:Ico.Kind="save" HorizontalAlignment="Left" MinWidth="130" />
+                            <TextBlock Text="{loc:T Settings.BackupHelp}" Style="{StaticResource Muted}" Margin="0,12,0,0" />
+                            <DockPanel Margin="0,8,0,0">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource Small}" Content="{loc:T Common.Open}" Command="{Binding OpenDataFolderCommand}" c:Ico.Kind="folder" />
+                                <TextBlock Text="{Binding DataFolder}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12" Visibility="{Binding CanBackup, Converter={StaticResource Visible}}">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Backups}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                            <WrapPanel Margin="0,0,0,10">
+                                <Button Style="{StaticResource Primary}" Content="{loc:T Settings.BackupNow}" Command="{Binding BackupNowCommand}" c:Ico.Kind="save" Margin="0,0,8,6" />
+                                <Button Content="{loc:T Settings.Restore}" Command="{Binding RestoreCommand}" c:Ico.Kind="undo" Margin="0,0,8,6" />
+                                <Button Content="{loc:T Settings.RestoreFile}" Command="{Binding RestoreFileCommand}" c:Ico.Kind="folder" Margin="0,0,0,6" />
+                            </WrapPanel>
+                            <DataGrid ItemsSource="{Binding Backups}" SelectedItem="{Binding SelectedBackup}" MaxHeight="300">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{loc:T Common.Date}" Binding="{Binding CreatedAt, Converter={StaticResource Date}, ConverterParameter=datetime}" SortMemberPath="CreatedAt" Width="160" ElementStyle="{StaticResource CellMono}" />
+                                    <DataGridTextColumn Header="{loc:T Settings.BackupFile}" Binding="{Binding FileName}" Width="*" ElementStyle="{StaticResource CellMono}" />
+                                    <DataGridCheckBoxColumn Header="{loc:T Settings.Automatic}" Binding="{Binding IsAutomatic, Mode=OneWay}" Width="110" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=appearance}">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Appearance}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                <c:Field Label="{loc:T Settings.Theme}">
+                    <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" DisplayMemberPath="Label" />
+                </c:Field>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                <c:Field Label="{loc:T Settings.Language}">
+                    <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Label" />
+                </c:Field>
+                    </StackPanel>
+                </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Account}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                            <Button Content="{loc:T Account.ChangePassword}" Command="{Binding ChangePasswordCommand}" c:Ico.Kind="lock" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>

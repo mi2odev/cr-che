@@ -1,0 +1,11 @@
+<Window x:Class="Creche.App.Dialogs.DialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Creche.App.Services"
+        Title="{Binding Title}" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" MinWidth="360"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="{StaticResource FontUi}" FontSize="13"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}"
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True">
+    <ContentControl Content="{Binding}" Margin="22,18,22,20" Focusable="False" />
+</Window>

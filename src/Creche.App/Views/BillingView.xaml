@@ -1,0 +1,141 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Creche.App.Controls"
+                    xmlns:loc="clr-namespace:Creche.App.Services"
+                    xmlns:vm="clr-namespace:Creche.App.ViewModels">
+    <DataTemplate DataType="{x:Type vm:BillingViewModel}">
+        <DockPanel Margin="26,20,26,20">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding ExportCsvCommand}" c:Ico.Kind="download" Content="CSV" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Primary}" Command="{Binding GenerateCommand}" c:Ico.Kind="file" Content="{loc:T Billing.Generate}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="{loc:T Nav.billing}" Style="{StaticResource H1}" />
+                    <TextBlock Text="{Binding Totals}" Style="{StaticResource Muted}" />
+                </StackPanel>
+            </DockPanel>
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,0,1" Margin="0,0,0,12">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Billing.Invoices}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=invoices}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Billing.ExtraCharges}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=charges}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Billing.FeePlans}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=plans}" />
+                </StackPanel>
+            </Border>
+            <Grid>
+                <!-- Invoices -->
+                <DockPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=invoices}">
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button Style="{StaticResource Ghost}" Command="{Binding ShiftMonthCommand}" CommandParameter="-1" Margin="0,0,2,6"><c:Icon Kind="chevron-left" Width="15" Height="15" /></Button>
+                        <Border Style="{StaticResource Chip}" Padding="14,8" Margin="0,0,2,6" MinWidth="150">
+                            <TextBlock Text="{Binding Month, Converter={StaticResource Date}, ConverterParameter=month}" FontWeight="SemiBold" TextAlignment="Center" />
+                        </Border>
+                        <Button Style="{StaticResource Ghost}" Command="{Binding ShiftMonthCommand}" CommandParameter="1" Margin="0,0,10,6"><c:Icon Kind="chevron-right" Width="15" Height="15" /></Button>
+                        <CheckBox Content="{loc:T Billing.AllPeriods}" IsChecked="{Binding AllPeriods}" Margin="0,0,12,6" />
+                        <ComboBox ItemsSource="{Binding Statuses}" SelectedItem="{Binding Status}" DisplayMemberPath="Label" Width="170" Margin="0,0,8,6" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=250}" Width="220" Margin="0,0,0,6" ToolTip="{loc:T Common.Search}" />
+                    </WrapPanel>
+                    <Border Style="{StaticResource Card}" Padding="6">
+                        <DataGrid ItemsSource="{Binding Invoices}" SelectedItem="{Binding Selected}" loc:GridState.Key="invoices">
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenCommand}" />
+                                <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
+                            </DataGrid.InputBindings>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:T Billing.Invoice}" Binding="{Binding Number}" Width="130" ElementStyle="{StaticResource CellMono}" />
+                                <DataGridTextColumn Header="{loc:T Common.Child}" Binding="{Binding ChildName}" Width="*" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Common.Family}" Binding="{Binding FamilyName}" Width="*" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Billing.Period}" Binding="{Binding Period, Converter={StaticResource Date}, ConverterParameter=month}" SortMemberPath="Period" Width="130" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Billing.DueDate}" Binding="{Binding DueDate, Converter={StaticResource Date}}" SortMemberPath="DueDate" Width="105" ElementStyle="{StaticResource CellMono}" />
+                                <DataGridTextColumn Header="{loc:T Common.Total}" Binding="{Binding Total, Converter={StaticResource Money}}" SortMemberPath="Total" Width="130" ElementStyle="{StaticResource CellNumber}" />
+                                <DataGridTextColumn Header="{loc:T Billing.Remaining}" Binding="{Binding Remaining, Converter={StaticResource Money}}" SortMemberPath="Remaining" Width="130" ElementStyle="{StaticResource CellNumber}" />
+                            <DataGridTemplateColumn Header="{loc:T Common.Status}" SortMemberPath="Status" Width="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource Chip}" Background="{Binding Status, Converter={StaticResource StatusBrush}, ConverterParameter=soft}">
+                                            <TextBlock Text="{Binding Status, Converter={StaticResource Enum}}" FontSize="11.5" FontWeight="SemiBold"
+                                                       Foreground="{Binding Status, Converter={StaticResource StatusBrush}}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="40" CanUserSort="False">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <c:Icon Kind="alert" Width="15" Height="15" Foreground="{DynamicResource Danger}" ToolTip="{loc:T Billing.Overdue}"
+                                                    Visibility="{Binding IsOverdue, Converter={StaticResource Visible}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </DockPanel>
+
+                <!-- Extra charges waiting for the next invoice -->
+                <DockPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=charges}">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Command="{Binding AddChargeCommand}" c:Ico.Kind="plus" Content="{loc:T Billing.AddCharge}" />
+                        <TextBlock Text="{loc:T Billing.ChargesHint}" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <Border Style="{StaticResource Card}" Padding="6">
+                        <DataGrid ItemsSource="{Binding Charges}" loc:GridState.Key="charges">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:T Common.Date}" Binding="{Binding Date, Converter={StaticResource Date}}" SortMemberPath="Date" Width="110" ElementStyle="{StaticResource CellMono}" />
+                                <DataGridTextColumn Header="{loc:T Common.Child}" Binding="{Binding ChildName}" Width="*" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Billing.ChargeKind}" Binding="{Binding Kind, Converter={StaticResource Enum}}" SortMemberPath="Kind" Width="160" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Common.Description}" Binding="{Binding Description}" Width="*" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Common.Amount}" Binding="{Binding Amount, Converter={StaticResource Money}}" SortMemberPath="Amount" Width="130" ElementStyle="{StaticResource CellNumber}" />
+                            <DataGridTemplateColumn Width="Auto" CanUserSort="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource Ghost}" MinHeight="28" ToolTip="{loc:T Common.Cancel}"
+                                                    Command="{Binding DataContext.CancelChargeCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                                <c:Icon Kind="x" Width="14" Height="14" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </DockPanel>
+
+                <!-- Fee plans -->
+                <DockPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=plans}">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Command="{Binding EditPlanCommand}" c:Ico.Kind="plus" Content="{loc:T Billing.NewPlan}"
+                                Visibility="{Binding CanManagePlans, Converter={StaticResource Visible}}" />
+                        <TextBlock Text="{loc:T Billing.PlansHint}" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <Border Style="{StaticResource Card}" Padding="6">
+                        <DataGrid ItemsSource="{Binding Plans}" loc:GridState.Key="plans">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:T Common.Name}" Binding="{Binding Name}" Width="*" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Billing.PlanType}" Binding="{Binding Type, Converter={StaticResource Enum}}" SortMemberPath="Type" Width="150" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{loc:T Billing.MonthlyAmount}" Binding="{Binding MonthlyAmount, Converter={StaticResource Money}}" SortMemberPath="MonthlyAmount" Width="150" ElementStyle="{StaticResource CellNumber}" />
+                                <DataGridTextColumn Header="{loc:T Billing.HourlyRate}" Binding="{Binding HourlyRate, Converter={StaticResource Money}}" SortMemberPath="HourlyRate" Width="130" ElementStyle="{StaticResource CellNumber}" />
+                                <DataGridTextColumn Header="{loc:T Billing.Meals}" Binding="{Binding MealsAmount, Converter={StaticResource Money}}" SortMemberPath="MealsAmount" Width="130" ElementStyle="{StaticResource CellNumber}" />
+                                <DataGridCheckBoxColumn Header="{loc:T Billing.IncludesMeals}" Binding="{Binding IncludesMeals}" Width="110" />
+                                <DataGridCheckBoxColumn Header="{loc:T Common.Active}" Binding="{Binding IsActive}" Width="80" />
+                                <DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource Ghost}" MinHeight="28" ToolTip="{loc:T Common.Edit}"
+                                                    Visibility="{Binding DataContext.CanManagePlans, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource Visible}}"
+                                                    Command="{Binding DataContext.EditPlanCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                                <c:Icon Kind="edit" Width="14" Height="14" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </DockPanel>
+            </Grid>
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>

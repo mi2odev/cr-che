@@ -1,0 +1,104 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Creche.App.Controls"
+                    xmlns:loc="clr-namespace:Creche.App.Services"
+                    xmlns:vm="clr-namespace:Creche.App.ViewModels">
+    <DataTemplate DataType="{x:Type loc:MessageDialogViewModel}">
+        <StackPanel Width="400">
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="13.5" Margin="0,2,0,12" />
+            <DockPanel LastChildFill="False" Margin="0,8,0,0">
+                <Grid DockPanel.Dock="Right">
+                    <Button Style="{StaticResource Primary}" Content="{Binding ConfirmText}" Command="{Binding OkCommand}" IsDefault="True" MinWidth="110"
+                            Visibility="{Binding Danger, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                    <Button Style="{StaticResource DangerBtn}" Content="{Binding ConfirmText}" Command="{Binding OkCommand}" MinWidth="110"
+                            Visibility="{Binding Danger, Converter={StaticResource Visible}}" />
+                </Grid>
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Cancel}" Command="{Binding CancelCommand}" Margin="0,0,8,0" MinWidth="90"
+                        Visibility="{Binding ShowCancel, Converter={StaticResource Visible}}" />
+            </DockPanel>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type loc:PromptDialogViewModel}">
+        <StackPanel Width="400">
+            <c:Field Label="{Binding Label}">
+                <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+            </c:Field>
+            <DockPanel Margin="0,10,0,0" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Content="{loc:T Common.Ok}" Command="{Binding OkCommand}" IsDefault="True" MinWidth="110" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Cancel}" Command="{Binding CancelCommand}" Margin="0,0,8,0" MinWidth="90" />
+            </DockPanel>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type loc:PrintPreviewViewModel}">
+        <DockPanel Width="860" Height="680">
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,12,0,0">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Content="{loc:T Common.Print}" Command="{Binding PrintCommand}" c:Ico.Kind="printer" IsDefault="True" MinWidth="120" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Print.ExportPdf}" Command="{Binding PdfCommand}" c:Ico.Kind="download" Margin="0,0,8,0" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Close}" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
+            </DockPanel>
+            <Border Background="White" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="6">
+                <FlowDocumentScrollViewer Document="{Binding Document}" VerticalScrollBarVisibility="Auto" Background="White" Foreground="Black" IsToolBarVisible="False" />
+            </Border>
+        </DockPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:SearchViewModel}">
+        <DockPanel Width="560" Height="420">
+            <TextBox DockPanel.Dock="Top" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" FontSize="15" MinHeight="40" Margin="0,0,0,10">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Down" Command="{Binding MoveCommand}" CommandParameter="1" />
+                    <KeyBinding Key="Up" Command="{Binding MoveCommand}" CommandParameter="-1" />
+                    <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
+                </TextBox.InputBindings>
+            </TextBox>
+            <TextBlock DockPanel.Dock="Bottom" Text="{loc:T Search.Hint}" Style="{StaticResource Muted}" Margin="0,8,0,0" />
+            <Grid>
+                <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}">
+                    <ListBox.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
+                    </ListBox.InputBindings>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <Border DockPanel.Dock="Right" Style="{StaticResource Chip}">
+                                    <TextBlock Text="{Binding Kind, Converter={StaticResource Enum}}" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Muted}" FontSize="11" Visibility="{Binding Subtitle, Converter={StaticResource Visible}}" />
+                                </StackPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Text="{loc:T Search.NoResults}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Visibility="{Binding NoResults, Converter={StaticResource Visible}}" />
+            </Grid>
+        </DockPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:ChangePasswordViewModel}">
+        <StackPanel Width="360">
+            <Border Background="{DynamicResource InfoSoft}" CornerRadius="8" Padding="10,7" Margin="0,0,0,12" Visibility="{Binding Forced, Converter={StaticResource Visible}}">
+                <TextBlock Text="{loc:T Account.MustChange}" Foreground="{DynamicResource Info}" TextWrapping="Wrap" />
+            </Border>
+            <c:Field Label="{loc:T Account.CurrentPassword}" Visibility="{Binding Forced, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                <PasswordBox loc:PasswordHelper.Password="{Binding CurrentPassword, Mode=TwoWay}" />
+            </c:Field>
+            <c:Field Label="{loc:T Account.NewPassword}">
+                <PasswordBox loc:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay}" />
+            </c:Field>
+            <c:Field Label="{loc:T Account.ConfirmPassword}">
+                <PasswordBox loc:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay}" />
+            </c:Field>
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Danger}" TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource Visible}}" />
+            <DockPanel Margin="0,10,0,0" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" IsDefault="True" MinWidth="110" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Cancel}" Command="{Binding CancelCommand}" Margin="0,0,8,0" MinWidth="90" />
+            </DockPanel>
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

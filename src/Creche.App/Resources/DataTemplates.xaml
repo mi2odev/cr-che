@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Maps every view model to its view. Pages and dialogs are plain DataTemplates: no code-behind. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/CrecheManager;component/Views/DashboardView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/ChildrenView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/FamiliesView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/GroupsView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/EnrolmentView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/AttendanceView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/ActivityLogView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/BillingView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/PaymentsView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/StaffView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/ExpensesView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/ReportsView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/UsersView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Views/SettingsView.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Dialogs/CommonDialogs.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Dialogs/ChildDialogs.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Dialogs/FamilyDialogs.xaml" />
+        <ResourceDictionary Source="/CrecheManager;component/Dialogs/MoneyDialogs.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

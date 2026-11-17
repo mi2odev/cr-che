@@ -1,0 +1,308 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Creche.App.Controls"
+                    xmlns:loc="clr-namespace:Creche.App.Services"
+                    xmlns:vm="clr-namespace:Creche.App.ViewModels">
+    <DataTemplate DataType="{x:Type vm:ChildDialogViewModel}">
+        <DockPanel Width="720" MinHeight="560">
+            <DockPanel DockPanel.Dock="Bottom" Margin="0,12,0,0" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" MinWidth="110" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Close}" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
+                <Button DockPanel.Dock="Left" Command="{Binding PrintFormCommand}" c:Ico.Kind="printer" Content="{loc:T Print.EnrolmentForm}" Margin="0,0,8,0" />
+                <Button DockPanel.Dock="Left" Command="{Binding AttendanceSheetCommand}" c:Ico.Kind="calendar" Content="{loc:T Attendance.MonthlySheet}" Margin="0,0,8,0" />
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                <c:ImagePicker DockPanel.Dock="Left" FileName="{Binding Child.PhotoFile, Mode=TwoWay}" PreviewSize="96" Margin="0,0,18,0" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource H1}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,8">
+                        <Border Style="{StaticResource Chip}" Background="{Binding Child.Status, Converter={StaticResource StatusBrush}, ConverterParameter=soft}">
+                            <TextBlock Text="{Binding Child.Status, Converter={StaticResource Enum}}" FontSize="11.5" FontWeight="SemiBold" Foreground="{Binding Child.Status, Converter={StaticResource StatusBrush}}" />
+                        </Border>
+                        <TextBlock Text="{Binding Child.DateOfBirth, Converter={StaticResource Age}}" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                        <TextBlock Text="{Binding Child.LeaveDate, Converter={StaticResource Date}}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"
+                                   Visibility="{Binding HasLeft, Converter={StaticResource Visible}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding CanEnrol, Converter={StaticResource Visible}}">
+                        <Button Style="{StaticResource Small}" Content="{loc:T Enrolment.Admit}" Command="{Binding EnrolmentActionCommand}" CommandParameter="Admit" Margin="0,0,6,0"
+                                Visibility="{Binding IsWaiting, Converter={StaticResource Visible}}" />
+                        <Button Style="{StaticResource Small}" Content="{loc:T Enrolment.ReEnrol}" Command="{Binding EnrolmentActionCommand}" CommandParameter="ReEnrol" Margin="0,0,6,0"
+                                Visibility="{Binding IsWaiting, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        <Button Style="{StaticResource Small}" Content="{loc:T Enrolment.Leave}" Command="{Binding EnrolmentActionCommand}" CommandParameter="Leave" Margin="0,0,6,0"
+                                Visibility="{Binding IsActive, Converter={StaticResource Visible}}" />
+                        <Button Style="{StaticResource Small}" Content="{loc:T Common.Archive}" Command="{Binding ArchiveCommand}"
+                                Visibility="{Binding IsActive, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                    </StackPanel>
+                </StackPanel>
+            </DockPanel>
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,0,1" Margin="0,0,0,14">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Children.General}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=general}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Children.Health}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=health}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Children.FamilyTab}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=family}" />
+                    <RadioButton Style="{StaticResource Segment}" Content="{loc:T Children.Documents}" IsChecked="{Binding Tab, Converter={StaticResource Is}, ConverterParameter=documents}" />
+                </StackPanel>
+            </Border>
+            <Grid>
+                <StackPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=general}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                <c:Field Label="{loc:T Common.FirstName}">
+                    <TextBox Text="{Binding Child.FirstName}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.BirthDate}">
+                    <DatePicker SelectedDate="{Binding Child.DateOfBirth, Converter={StaticResource DatePick}}" />
+                </c:Field>
+                <c:Field Label="{loc:T Common.Group}">
+                    <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding Group}" DisplayMemberPath="Label" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.CustomFee}">
+                    <TextBox Text="{Binding Child.CustomMonthlyFee, Converter={StaticResource Decimal}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.EnrolmentDate}">
+                    <DatePicker SelectedDate="{Binding Child.EnrolmentDate, Converter={StaticResource DatePick}}" />
+                </c:Field>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                <c:Field Label="{loc:T Common.LastName}">
+                    <TextBox Text="{Binding Child.LastName}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.Sex}">
+                    <ComboBox ItemsSource="{Binding Sexes}" SelectedValue="{Binding Child.Sex}" SelectedValuePath="Value" DisplayMemberPath="Label" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.FeePlan}">
+                    <ComboBox ItemsSource="{Binding Plans}" SelectedItem="{Binding Plan}" DisplayMemberPath="Label" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.MonthlyFee}">
+                    <Border Style="{StaticResource Chip}" Padding="10,8" HorizontalAlignment="Stretch"><TextBlock Text="{Binding MonthlyFee}" Style="{StaticResource Mono}" FontWeight="Bold" /></Border>
+                </c:Field>
+                <c:Field Label="{loc:T Settings.SchoolYear}">
+                    <TextBox Text="{Binding Child.SchoolYear}" />
+                </c:Field>
+                    </StackPanel>
+                </Grid>
+                </StackPanel>
+                <StackPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=health}">
+                <c:Field Label="{loc:T Children.Allergies}">
+                    <TextBox Text="{Binding Child.Allergies}" Style="{StaticResource Multiline}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.MedicalNotes}">
+                    <TextBox Text="{Binding Child.MedicalNotes}" Style="{StaticResource Multiline}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.Instructions}">
+                    <TextBox Text="{Binding Child.SpecialInstructions}" Style="{StaticResource Multiline}" />
+                </c:Field>
+                    <TextBlock Text="{loc:T Children.Vaccinations}" Style="{StaticResource Label}" />
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid MinHeight="46" MaxHeight="110">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Vaccinations}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,5">
+                                                <DockPanel>
+                                                    <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" MinHeight="26" ToolTip="{loc:T Common.Remove}"
+                                                            Command="{Binding DataContext.RemoveVaccinationCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                        <c:Icon Kind="x" Width="14" Height="14" />
+                                                    </Button>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Date, Converter={StaticResource Date}}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Text="{loc:T Common.Nothing}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding Vaccinations.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        </Grid>
+                    </Border>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="{loc:T Common.Add}" Command="{Binding AddVaccinationCommand}" c:Ico.Kind="plus" Margin="8,0,0,0" />
+                        <DatePicker DockPanel.Dock="Right" SelectedDate="{Binding NewVaccineDate}" Width="140" Margin="8,0,0,0" />
+                        <TextBox Text="{Binding NewVaccineName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{loc:T Children.VaccineName}" />
+                    </DockPanel>
+                </StackPanel>
+                <StackPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=family}">
+                    <DockPanel Margin="0,0,0,5">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Small}" Content="{loc:T Families.File}" Command="{Binding OpenFamilyCommand}" c:Ico.Kind="users" />
+                        <TextBlock Text="{loc:T Families.Guardians}" Style="{StaticResource Label}" VerticalAlignment="Bottom" />
+                    </DockPanel>
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid MinHeight="46" MaxHeight="130">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Guardians}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,5">
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Phone}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" />
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" />
+                                                        <TextBlock Style="{StaticResource Muted}" FontSize="11"><Run Text="{Binding Relationship, Mode=OneWay, Converter={StaticResource Enum}}" /><Run Text="  " /><Run Text="{Binding Job, Mode=OneWay}" /></TextBlock>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Text="{loc:T Common.Nothing}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding Guardians.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        </Grid>
+                    </Border>
+                    <DockPanel Margin="0,0,0,5">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Small}" Content="{loc:T Common.Add}" Command="{Binding EditPickupCommand}" c:Ico.Kind="plus" />
+                        <TextBlock Text="{loc:T Children.PickupsAndEmergency}" Style="{StaticResource Label}" VerticalAlignment="Bottom" />
+                    </DockPanel>
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid MinHeight="46" MaxHeight="130">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Pickups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,5">
+                                                <DockPanel>
+                                                    <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" MinHeight="26" ToolTip="{loc:T Common.Archive}"
+                                                            Command="{Binding DataContext.ArchivePickupCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                        <c:Icon Kind="archive" Width="14" Height="14" />
+                                                    </Button>
+                                                    <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" MinHeight="26" ToolTip="{loc:T Common.Edit}"
+                                                            Command="{Binding DataContext.EditPickupCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                        <c:Icon Kind="edit" Width="14" Height="14" />
+                                                    </Button>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Phone}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                    <c:Icon DockPanel.Dock="Right" Kind="phone" Width="13" Height="13" Margin="0,0,8,0" Foreground="{DynamicResource Danger}" ToolTip="{loc:T Children.EmergencyContact}"
+                                                            Visibility="{Binding IsEmergencyContact, Converter={StaticResource Visible}}" />
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding RelationshipNote}" Style="{StaticResource Muted}" FontSize="11" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Text="{loc:T Children.NoPickups}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding Pickups.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="{loc:T Children.Siblings}" Style="{StaticResource Label}" />
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid MinHeight="46" MaxHeight="90">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Siblings}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,5">
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Status, Converter={StaticResource Enum}}" FontSize="11" Foreground="{Binding Status, Converter={StaticResource StatusBrush}}" VerticalAlignment="Center" />
+                                                    <TextBlock><Run Text="{Binding FullName, Mode=OneWay}" FontWeight="SemiBold" /><Run Text="   " /><Run Text="{Binding DateOfBirth, Mode=OneWay, Converter={StaticResource Age}}" /></TextBlock>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Text="{loc:T Children.NoSiblings}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding Siblings.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+                <StackPanel Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=documents}">
+                    <DockPanel Margin="0,0,0,5">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Small}" Content="{loc:T Children.AddDocument}" Command="{Binding AddDocumentCommand}" c:Ico.Kind="upload" />
+                        <TextBlock Text="{loc:T Children.Documents}" Style="{StaticResource Label}" VerticalAlignment="Bottom" />
+                    </DockPanel>
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid MinHeight="46" MaxHeight="300">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Documents}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,5">
+                                                <DockPanel>
+                                                    <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" MinHeight="26" ToolTip="{loc:T Common.Archive}"
+                                                            Command="{Binding DataContext.ArchiveDocumentCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                        <c:Icon Kind="archive" Width="14" Height="14" />
+                                                    </Button>
+                                                    <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" MinHeight="26" ToolTip="{loc:T Common.Open}"
+                                                            Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                                        <c:Icon Kind="folder" Width="14" Height="14" />
+                                                    </Button>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding AddedAt, Converter={StaticResource Date}, ConverterParameter=datetime}" Style="{StaticResource Mono}" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Text="{loc:T Children.NoDocuments}" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding Documents.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        </Grid>
+                    </Border>
+                    <CheckBox Content="{loc:T Children.ActivityLogEnabled}" IsChecked="{Binding Child.ActivityLogEnabled}" Margin="0,4,0,0" />
+                </StackPanel>
+            </Grid>
+        </DockPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:PickupDialogViewModel}">
+        <StackPanel Width="380">
+                <c:Field Label="{loc:T Common.Name}">
+                    <TextBox Text="{Binding Pickup.FullName}" />
+                </c:Field>
+                <c:Field Label="{loc:T Common.Phone}">
+                    <TextBox Text="{Binding Pickup.Phone}" />
+                </c:Field>
+                <c:Field Label="{loc:T Families.Relationship}">
+                    <TextBox Text="{Binding Pickup.RelationshipNote}" />
+                </c:Field>
+                <c:Field Label="{loc:T Children.IdNumber}">
+                    <TextBox Text="{Binding Pickup.IdNumber}" />
+                </c:Field>
+            <CheckBox Content="{loc:T Families.CanPickUp}" IsChecked="{Binding Pickup.CanPickUp}" Margin="0,0,0,8" />
+            <CheckBox Content="{loc:T Children.EmergencyContact}" IsChecked="{Binding Pickup.IsEmergencyContact}" />
+            <DockPanel Margin="0,10,0,0" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" IsDefault="True" MinWidth="110" />
+                <Button DockPanel.Dock="Right" Content="{loc:T Common.Cancel}" Command="{Binding CancelCommand}" Margin="0,0,8,0" MinWidth="90" />
+            </DockPanel>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MonthlySheetViewModel}">
+        <DockPanel Width="760" Height="620">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10" LastChildFill="False">
+                <Button DockPanel.Dock="Left" Style="{StaticResource Ghost}" Command="{Binding ShiftCommand}" CommandParameter="-1"><c:Icon Kind="chevron-left" Width="15" Height="15" /></Button>
+                <Border DockPanel.Dock="Left" Style="{StaticResource Chip}" Padding="14,8" MinWidth="150">
+                    <TextBlock Text="{Binding Month, Converter={StaticResource Date}, ConverterParameter=month}" FontWeight="SemiBold" TextAlignment="Center" />
+                </Border>
+                <Button DockPanel.Dock="Left" Style="{StaticResource Ghost}" Command="{Binding ShiftCommand}" CommandParameter="1"><c:Icon Kind="chevron-right" Width="15" Height="15" /></Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Command="{Binding PrintCommand}" c:Ico.Kind="printer" Content="{loc:T Common.Print}" />
+                <Button DockPanel.Dock="Right" Command="{Binding ExportCsvCommand}" c:Ico.Kind="download" Content="CSV" Margin="0,0,8,0" />
+            </DockPanel>
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                <TextBlock Margin="0,0,20,0"><Run Text="{loc:T Attendance.PresentDays}" Foreground="{DynamicResource TextMuted}" /><Run Text="  " /><Run Text="{Binding Sheet.PresentDays, Mode=OneWay}" FontWeight="Bold" /></TextBlock>
+                <TextBlock Margin="0,0,20,0"><Run Text="{loc:T Attendance.AbsentDays}" Foreground="{DynamicResource TextMuted}" /><Run Text="  " /><Run Text="{Binding Sheet.AbsentDays, Mode=OneWay}" FontWeight="Bold" /></TextBlock>
+                <TextBlock Margin="0,0,20,0"><Run Text="{loc:T Attendance.Hours}" Foreground="{DynamicResource TextMuted}" /><Run Text="  " /><Run Text="{Binding Sheet.TotalHours, Mode=OneWay}" FontWeight="Bold" /></TextBlock>
+                <TextBlock><Run Text="{loc:T Reports.AttendanceRate}" Foreground="{DynamicResource TextMuted}" /><Run Text="  " /><Run Text="{Binding Sheet.AttendanceRate, Mode=OneWay}" FontWeight="Bold" /><Run Text=" %" /></TextBlock>
+            </WrapPanel>
+            <Border Style="{StaticResource Card}" Padding="6">
+                <DataGrid ItemsSource="{Binding Sheet.Days}" CanUserSortColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="{loc:T Common.Date}" Binding="{Binding Date, Converter={StaticResource Date}, ConverterParameter=day}" Width="90" ElementStyle="{StaticResource CellMono}" />
+                        <DataGridTextColumn Header="{loc:T Common.Status}" Binding="{Binding Status, Converter={StaticResource Enum}}" Width="100" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{loc:T Attendance.CheckIn}" Binding="{Binding CheckIn, Converter={StaticResource Time}}" Width="80" ElementStyle="{StaticResource CellMono}" />
+                        <DataGridTextColumn Header="{loc:T Attendance.CheckOut}" Binding="{Binding CheckOut, Converter={StaticResource Time}}" Width="80" ElementStyle="{StaticResource CellMono}" />
+                        <DataGridTextColumn Header="{loc:T Attendance.DroppedBy}" Binding="{Binding DroppedOffBy}" Width="*" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{loc:T Attendance.PickedBy}" Binding="{Binding PickedUpBy}" Width="*" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{loc:T Attendance.Reason}" Binding="{Binding AbsenceReason}" Width="*" ElementStyle="{StaticResource CellText}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>

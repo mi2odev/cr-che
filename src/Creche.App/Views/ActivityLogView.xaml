@@ -1,0 +1,54 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Creche.App.Controls"
+                    xmlns:loc="clr-namespace:Creche.App.Services"
+                    xmlns:vm="clr-namespace:Creche.App.ViewModels">
+    <DataTemplate DataType="{x:Type vm:ActivityLogViewModel}">
+        <DockPanel Margin="26,20,26,20">
+            <TextBlock DockPanel.Dock="Top" Text="{loc:T Nav.activity}" Style="{StaticResource H1}" Margin="0,0,0,14" />
+            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                <Button Style="{StaticResource Ghost}" Command="{Binding ShiftDayCommand}" CommandParameter="-1" Margin="0,0,2,6"><c:Icon Kind="chevron-left" Width="15" Height="15" /></Button>
+                <DatePicker SelectedDate="{Binding Date}" Width="150" Margin="0,0,2,6" />
+                <Button Style="{StaticResource Ghost}" Command="{Binding ShiftDayCommand}" CommandParameter="1" Margin="0,0,10,6"><c:Icon Kind="chevron-right" Width="15" Height="15" /></Button>
+                <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding Group}" DisplayMemberPath="Label" Width="190" Margin="0,0,0,6" />
+            </WrapPanel>
+            <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Margin="0,0,0,12">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" Command="{Binding AddCommand}" c:Ico.Kind="plus" Content="{loc:T Common.Add}" VerticalAlignment="Bottom" Margin="10,0,0,0" IsDefault="True" />
+                    <c:Field DockPanel.Dock="Left" Label="{loc:T Common.Child}" Width="200" Margin="0,0,10,0">
+                        <ComboBox ItemsSource="{Binding Children}" SelectedItem="{Binding Child}" DisplayMemberPath="Name" />
+                    </c:Field>
+                    <c:Field DockPanel.Dock="Left" Label="{loc:T Activity.Type}" Width="140" Margin="0,0,10,0">
+                        <ComboBox ItemsSource="{Binding Types}" SelectedValue="{Binding Type}" SelectedValuePath="Value" DisplayMemberPath="Label" />
+                    </c:Field>
+                    <c:Field DockPanel.Dock="Left" Label="{loc:T Activity.Time}" Width="76" Margin="0,0,10,0">
+                        <TextBox Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource FontMono}" ToolTip="HH:mm" />
+                    </c:Field>
+                    <c:Field Label="{loc:T Activity.Note}" Margin="0">
+                        <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+                    </c:Field>
+                </DockPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Padding="6">
+                <DataGrid ItemsSource="{Binding Entries}" loc:GridState.Key="activity">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="{loc:T Activity.Time}" Binding="{Binding Time, Converter={StaticResource Time}}" SortMemberPath="Time" Width="80" ElementStyle="{StaticResource CellMono}" />
+                        <DataGridTextColumn Header="{loc:T Common.Child}" Binding="{Binding ChildName}" Width="200" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{loc:T Activity.Type}" Binding="{Binding Type, Converter={StaticResource Enum}}" SortMemberPath="Type" Width="120" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{loc:T Activity.Note}" Binding="{Binding Description}" Width="*" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTemplateColumn Width="50" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Ghost}" MinHeight="28" ToolTip="{loc:T Common.Delete}"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                        <c:Icon Kind="x" Width="14" Height="14" />
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>

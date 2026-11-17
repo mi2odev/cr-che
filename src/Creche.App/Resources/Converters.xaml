@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:cv="clr-namespace:Creche.App.Converters">
+    <cv:MoneyConverter x:Key="Money" />
+    <cv:DecimalConverter x:Key="Decimal" />
+    <cv:IntConverter x:Key="Int" />
+    <cv:DateConverter x:Key="Date" />
+    <cv:DateOnlyPickerConverter x:Key="DatePick" />
+    <cv:TimeConverter x:Key="Time" />
+    <cv:EnumConverter x:Key="Enum" />
+    <cv:VisibleConverter x:Key="Visible" />
+    <cv:NotConverter x:Key="Not" />
+    <cv:EqualsConverter x:Key="Is" />
+    <cv:EqualsVisibleConverter x:Key="IsVisible" />
+    <cv:StatusBrushConverter x:Key="StatusBrush" />
+    <cv:ToneBrushConverter x:Key="Tone" />
+    <cv:AgeConverter x:Key="Age" />
+    <cv:FormatConverter x:Key="Format" />
+</ResourceDictionary>

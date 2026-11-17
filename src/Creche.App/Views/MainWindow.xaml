@@ -1,0 +1,90 @@
+<Window x:Class="Creche.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:Creche.App.Controls"
+        xmlns:loc="clr-namespace:Creche.App.Services"
+        Title="{Binding CrecheName}" Width="1280" Height="800" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="{StaticResource FontUi}" FontSize="13"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}"
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Icon="/Resources/Images/app.ico">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="K" Command="{Binding SearchCommand}" />
+        <KeyBinding Key="F5" Command="{Binding CurrentPage.RefreshCommand, FallbackValue={x:Null}}" />
+    </Window.InputBindings>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="236" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,16,12,12">
+                <DockPanel DockPanel.Dock="Top" Margin="6,0,6,14">
+                    <Grid Width="38" Height="38" DockPanel.Dock="Left" Margin="0,0,10,0">
+                        <Image Source="/Resources/Images/logo.png" Visibility="{Binding LogoFile, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                        <c:Avatar FileName="{Binding LogoFile}" Width="38" Height="38" Background="Transparent"
+                                  Visibility="{Binding LogoFile, Converter={StaticResource Visible}}" />
+                    </Grid>
+                    <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H2}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </DockPanel>
+
+                <Button DockPanel.Dock="Top" Command="{Binding SearchCommand}" HorizontalContentAlignment="Stretch" Margin="0,0,0,10" Padding="10,7">
+                    <DockPanel Width="182">
+                        <TextBlock DockPanel.Dock="Right" Text="Ctrl+K" Style="{StaticResource Mono}" FontSize="10.5" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center" FontWeight="Normal" />
+                        <c:Icon DockPanel.Dock="Left" Kind="search" Width="14" Height="14" Foreground="{DynamicResource TextMuted}" Margin="0,0,8,0" />
+                        <TextBlock Text="{loc:T Search.Placeholder}" Foreground="{DynamicResource TextMuted}" FontWeight="Normal" />
+                    </DockPanel>
+                </Button>
+
+                <!-- Signed-in user -->
+                <Border DockPanel.Dock="Bottom" Background="{DynamicResource SurfaceAlt}" CornerRadius="10" Padding="10,8" Margin="0,10,0,0">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding LogoutCommand}" ToolTip="{loc:T Shell.SignOut}">
+                            <c:Icon Kind="logout" Width="16" Height="16" />
+                        </Button>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding ToggleThemeCommand}" ToolTip="{loc:T Settings.Theme}">
+                            <c:Icon Kind="{Binding ThemeIcon}" Width="16" Height="16" />
+                        </Button>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding UserName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding Role}" Style="{StaticResource Muted}" FontSize="11" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="2,2">
+                                <c:Icon Kind="{Binding Icon}" Width="17" Height="17" Margin="0,0,11,0" />
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Current page -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Focusable="False" />
+
+        <!-- Toasts -->
+        <ItemsControl Grid.Column="1" ItemsSource="{Binding Toasts.Items}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,20" Focusable="False">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{Binding Kind, Converter={StaticResource StatusBrush}}" BorderThickness="1"
+                            CornerRadius="10" Margin="0,8,0,0" MaxWidth="420" MinWidth="260">
+                        <Border Background="{Binding Kind, Converter={StaticResource StatusBrush}, ConverterParameter=soft}" CornerRadius="9" Padding="14,10">
+                            <DockPanel>
+                                <c:Icon DockPanel.Dock="Left" Kind="{Binding Icon}" Width="17" Height="17" Margin="0,1,10,0" VerticalAlignment="Top"
+                                        Foreground="{Binding Kind, Converter={StaticResource StatusBrush}}" />
+                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource Text}" />
+                            </DockPanel>
+                        </Border>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>
