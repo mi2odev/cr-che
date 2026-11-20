@@ -283,6 +283,7 @@ public sealed partial class PaymentsViewModel(IPaymentService payments, ISetting
             Tab = "history";
             await PrintAsync(paymentId);
         }
+        else if (TakeNewAction()) await Add();
     }
 
     partial void OnTabChanged(string value) => App.State.Set("payments.tab", value);

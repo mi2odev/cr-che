@@ -26,6 +26,7 @@ public sealed partial class FamiliesViewModel(IFamilyService families) : PageVie
             Parameter = null;
             OpenFile(familyId);
         }
+        else if (TakeNewAction()) Add();
     }
 
     partial void OnSearchChanged(string value) => _ = ReloadAsync();

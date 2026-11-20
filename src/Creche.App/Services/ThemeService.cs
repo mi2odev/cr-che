@@ -14,7 +14,21 @@ public sealed class ThemeService(UiState state)
     public bool IsDark => Current == Dark;
     public event EventHandler? Changed;
 
-    public void ApplySaved() => Apply(state.Get("theme", Dark));
+    /// <summary>Uses the theme chosen last time, or follows the Windows "app mode" on first start.</summary>
+    public void ApplySaved() => Apply(state.Get("theme") ?? SystemTheme());
+
+    private static string SystemTheme()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            return key?.GetValue("AppsUseLightTheme") is int light && light == 0 ? Dark : Light;
+        }
+        catch (Exception)
+        {
+            return Light;
+        }
+    }
 
     public void Toggle() => Apply(IsDark ? Light : Dark);
 

@@ -28,7 +28,30 @@ To try the application with sample data (3 groups, 9 children, parents, 4 fee pl
 `"SeedDemoData": true` in `src/Creche.App/appsettings.json` **before the first start**. Demo data is only
 inserted into an empty database. The admin account is always created, with or without demo data.
 
-Useful keys: **Ctrl+K** global search, **F5** reload the current screen, **Esc** close a dialog.
+### Getting around
+
+- **Dashboard**: a greeting, today's attendance progress (click it to take attendance), one-click
+  **quick actions** (take attendance, enrol a child, record a payment, add to the daily log, new family,
+  add an expense, monthly invoices) and key figures; every tile opens the matching screen.
+- **Command palette** (**Ctrl+K** or the search box in the menu): type a name, a receipt number, a page or
+  a task ("payment", "expense"…) and press Enter.
+- **Menu** grouped by *Today*, *Children & team*, *Money* and *Administration*. **Ctrl+B** collapses it to
+  icons only; the choice is remembered.
+- **Bigger text**: **Ctrl+=** / **Ctrl+-** / **Ctrl+0**, or the **A+** button under your name (80–160 %, remembered).
+- **Light and dark themes**: on first start the app follows the Windows setting; switch any time with the
+  sun/moon button or **Ctrl+Shift+L**.
+
+| Key | Action |
+| --- | --- |
+| Ctrl+K | Search or start a task |
+| Ctrl+1 … Ctrl+9 | Open the 1st … 9th menu page |
+| Alt+Left / mouse back button | Previous page |
+| F5 | Reload the current page |
+| Ctrl+B | Collapse / expand the menu |
+| Ctrl+= / Ctrl+- / Ctrl+0 | Text size |
+| Ctrl+Shift+L | Light / dark theme |
+| Enter / Esc | Open the selected row / close a dialog |
+| F1 | Show the shortcuts list in the app |
 
 ## Where the data lives
 

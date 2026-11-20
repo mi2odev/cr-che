@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Creche.App.Services;
 
@@ -19,6 +21,9 @@ public sealed record Toast(string Message, ToastKind Kind)
 public sealed class ToastService
 {
     public ObservableCollection<Toast> Items { get; } = [];
+
+    /// <summary>Clicking a toast closes it straight away.</summary>
+    public ICommand DismissCommand => field ??= new RelayCommand<Toast>(t => { if (t is not null) Dismiss(t); });
 
     public void Info(string message) => Show(message, ToastKind.Info);
     public void Success(string message) => Show(message, ToastKind.Success);

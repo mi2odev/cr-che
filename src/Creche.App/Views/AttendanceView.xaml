@@ -61,7 +61,7 @@
 
                                         <!-- Arrival -->
                                         <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="6,0">
-                                            <TextBox Text="{Binding CheckIn, UpdateSourceTrigger=PropertyChanged}" Width="62" Padding="4,6" FontFamily="{StaticResource FontMono}" ToolTip="{loc:T Attendance.CheckIn}" TextAlignment="Center" />
+                                            <TextBox Text="{Binding CheckIn, UpdateSourceTrigger=PropertyChanged}" Width="62" Padding="4,6" FontFamily="{StaticResource FontMono}" ToolTip="{loc:T Attendance.CheckIn}" c:Hint.Text="--:--" TextAlignment="Center" />
                                             <ComboBox IsEditable="True" ItemsSource="{Binding Item.PickupNames}" Text="{Binding DroppedOffBy, UpdateSourceTrigger=PropertyChanged}" Width="116" Margin="5,0"
                                                       ToolTip="{loc:T Attendance.DroppedBy}" />
                                             <Button Style="{StaticResource SuccessBtn}" Content="{loc:T Attendance.Arrive}" Padding="10,7"
@@ -69,7 +69,7 @@
                                         </StackPanel>
                                         <!-- Departure -->
                                         <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="8,0,4,0" IsEnabled="{Binding IsPresent}">
-                                            <TextBox Text="{Binding CheckOut, UpdateSourceTrigger=PropertyChanged}" Width="62" Padding="4,6" FontFamily="{StaticResource FontMono}" ToolTip="{loc:T Attendance.CheckOut}" TextAlignment="Center" />
+                                            <TextBox Text="{Binding CheckOut, UpdateSourceTrigger=PropertyChanged}" Width="62" Padding="4,6" FontFamily="{StaticResource FontMono}" ToolTip="{loc:T Attendance.CheckOut}" c:Hint.Text="--:--" TextAlignment="Center" />
                                             <ComboBox IsEditable="True" ItemsSource="{Binding Item.PickupNames}" Text="{Binding PickedUpBy, UpdateSourceTrigger=PropertyChanged}" Width="116" Margin="5,0"
                                                       ToolTip="{loc:T Attendance.PickedBy}" />
                                             <Button Content="{loc:T Attendance.Leave}" Padding="10,7"

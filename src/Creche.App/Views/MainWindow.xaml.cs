@@ -18,6 +18,9 @@ public partial class MainWindow : Window
         if (App.State.GetBool("window.maximized")) WindowState = WindowState.Maximized;
 
         SourceInitialized += (_, _) => App.Themes.ApplyTitleBar(this);
+        // Mouse "back" button and the keyboard Back key return to the previous page.
+        CommandBindings.Add(new System.Windows.Input.CommandBinding(System.Windows.Input.NavigationCommands.BrowseBack,
+            (_, _) => App.Shell?.GoBackCommand.Execute(null)));
         Closing += (_, _) =>
         {
             App.State.Set("window.maximized", WindowState == WindowState.Maximized);

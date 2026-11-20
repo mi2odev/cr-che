@@ -5,24 +5,95 @@
                     xmlns:vm="clr-namespace:Creche.App.ViewModels">
     <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="26,20,26,24">
-                <DockPanel Margin="0,0,0,16">
-                    <Button DockPanel.Dock="Right" Command="{Binding RefreshCommand}" c:Ico.Kind="refresh" Content="{loc:T Common.Refresh}" VerticalAlignment="Center" />
+            <StackPanel Margin="28,22,28,28" MaxWidth="1500">
+                <!-- Greeting -->
+                <DockPanel Margin="0,0,0,18">
+                    <Button DockPanel.Dock="Right" Command="{Binding RefreshCommand}" c:Ico.Kind="refresh" Content="{loc:T Common.Refresh}" VerticalAlignment="Center" ToolTip="F5" />
                     <StackPanel>
-                        <TextBlock Text="{loc:T Nav.dashboard}" Style="{StaticResource H1}" />
-                        <TextBlock Text="{Binding Date, Converter={StaticResource Date}, ConverterParameter=long}" Style="{StaticResource Muted}" />
+                        <TextBlock Text="{Binding Greeting}" Style="{StaticResource H1}" FontSize="26" />
+                        <TextBlock Text="{Binding Date, Converter={StaticResource Date}, ConverterParameter=long}" Style="{StaticResource Muted}" FontSize="13" Margin="0,2,0,0" />
                     </StackPanel>
                 </DockPanel>
 
-                <c:ResponsiveGrid MinColumnWidth="250" MaxColumns="4">
-                    <c:StatCard Title="{loc:T Dashboard.Present}" Value="{Binding Present}" Icon="check-circle" Foreground="{DynamicResource Success}" />
-                    <c:StatCard Title="{loc:T Dashboard.Absent}" Value="{Binding Absent}" Icon="x" Foreground="{DynamicResource Danger}" />
-                    <c:StatCard Title="{loc:T Dashboard.NotMarked}" Value="{Binding NotMarked}" Icon="clock" Foreground="{DynamicResource Info}" />
-                    <c:StatCard Title="{loc:T Dashboard.ActiveChildren}" Value="{Binding ActiveChildren}" Icon="smile" />
-                    <c:StatCard Title="{loc:T Dashboard.Received}" Value="{Binding Received}" Icon="money" Foreground="{DynamicResource Success}" />
-                    <c:StatCard Title="{loc:T Dashboard.FeesDue}" Value="{Binding FeesDue}" Icon="file" Foreground="{DynamicResource Warning}" />
-                    <c:StatCard Title="{loc:T Dashboard.FeesOverdue}" Value="{Binding FeesOverdue}" Icon="alert" Foreground="{DynamicResource Danger}" />
-                    <c:StatCard Title="{loc:T Dashboard.FreePlaces}" Value="{Binding FreePlaces}" Icon="grid" Foreground="{DynamicResource Info}" />
+                <!-- Today's attendance at a glance -->
+                <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="attendance" Margin="0,0,0,12">
+                    <Border Style="{StaticResource Card}">
+                        <DockPanel>
+                            <Grid DockPanel.Dock="Left" Width="48" Height="48" Margin="0,0,16,0" VerticalAlignment="Center">
+                                <Border CornerRadius="14" Background="{DynamicResource SuccessSoft}" />
+                                <c:Icon Kind="check-circle" Width="22" Height="22" Foreground="{DynamicResource Success}" />
+                            </Grid>
+                            <c:Icon DockPanel.Dock="Right" Kind="chevron-right" Width="18" Height="18" Foreground="{DynamicResource TextMuted}" Margin="14,0,0,0" VerticalAlignment="Center" />
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <StackPanel Margin="0,0,22,0">
+                                    <TextBlock Text="{loc:T Dashboard.Present}" Style="{StaticResource Muted}" FontSize="11" />
+                                    <TextBlock Text="{Binding Present}" Style="{StaticResource BigNumber}" Foreground="{DynamicResource Success}" />
+                                </StackPanel>
+                                <StackPanel Margin="0,0,22,0">
+                                    <TextBlock Text="{loc:T Dashboard.Absent}" Style="{StaticResource Muted}" FontSize="11" />
+                                    <TextBlock Text="{Binding Absent}" Style="{StaticResource BigNumber}" Foreground="{DynamicResource Danger}" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{loc:T Dashboard.NotMarked}" Style="{StaticResource Muted}" FontSize="11" />
+                                    <TextBlock Text="{Binding NotMarked}" Style="{StaticResource BigNumber}" Foreground="{DynamicResource Info}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{loc:T Dashboard.TodayAttendance}" Style="{StaticResource H2}" />
+                                <TextBlock Text="{Binding AttendanceText}" Style="{StaticResource Muted}" Margin="0,2,0,8" />
+                                <c:Meter Value="{Binding MarkedRatio}" Height="8" MaxWidth="420" HorizontalAlignment="Left" Track="{DynamicResource SurfaceAlt}" Fill="{DynamicResource Success}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </Button>
+
+                <!-- Quick actions -->
+                <TextBlock Text="{loc:T Dashboard.QuickActions}" Style="{StaticResource Caption}" FontSize="12" Margin="2,6,0,8"
+                           Visibility="{Binding Actions.Count, Converter={StaticResource Visible}}" />
+                <ItemsControl ItemsSource="{Binding Actions}" Margin="0,0,0,14" Focusable="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <c:ResponsiveGrid MinColumnWidth="200" MaxColumns="4" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource Bare}" Command="{Binding DataContext.RunActionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                <Border Style="{StaticResource Card}" Padding="14">
+                                    <DockPanel>
+                                        <Grid DockPanel.Dock="Left" Width="38" Height="38" Margin="0,0,12,0" VerticalAlignment="Center">
+                                            <Border CornerRadius="11" Background="{Binding Tone, Converter={StaticResource Tone}, ConverterParameter=soft}" />
+                                            <c:Icon Kind="{Binding Icon}" Width="18" Height="18" Foreground="{Binding Tone, Converter={StaticResource Tone}}" />
+                                        </Grid>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Muted}" FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Key figures: each tile opens the matching screen -->
+                <TextBlock Text="{loc:T Dashboard.KeyFigures}" Style="{StaticResource Caption}" FontSize="12" Margin="2,0,0,8" />
+                <c:ResponsiveGrid MinColumnWidth="230" MaxColumns="5">
+                    <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="children">
+                        <c:StatCard Title="{loc:T Dashboard.ActiveChildren}" Value="{Binding ActiveChildren}" Icon="smile" Foreground="{DynamicResource Accent}" />
+                    </Button>
+                    <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="groups">
+                        <c:StatCard Title="{loc:T Dashboard.FreePlaces}" Value="{Binding FreePlaces}" Icon="grid" Foreground="{DynamicResource Info}" />
+                    </Button>
+                    <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="payments">
+                        <c:StatCard Title="{loc:T Dashboard.Received}" Value="{Binding Received}" Icon="money" Foreground="{DynamicResource Success}" />
+                    </Button>
+                    <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="billing">
+                        <c:StatCard Title="{loc:T Dashboard.FeesDue}" Value="{Binding FeesDue}" Icon="file" Foreground="{DynamicResource Warning}" />
+                    </Button>
+                    <Button Style="{StaticResource Bare}" Command="{Binding GoCommand}" CommandParameter="payments">
+                        <c:StatCard Title="{loc:T Dashboard.FeesOverdue}" Value="{Binding FeesOverdue}" Icon="alert" Foreground="{DynamicResource Danger}" />
+                    </Button>
                 </c:ResponsiveGrid>
 
                 <c:ResponsiveGrid MinColumnWidth="320" MaxColumns="3" Margin="0,12,0,0">
@@ -60,13 +131,16 @@
                                             <DockPanel>
                                                 <c:Icon DockPanel.Dock="Left" Kind="bell" Width="15" Height="15" Margin="0,1,9,0" VerticalAlignment="Top"
                                                         Foreground="{Binding Tone, Converter={StaticResource Tone}}" />
+                                                <c:Icon DockPanel.Dock="Right" Kind="chevron-right" Width="14" Height="14" Margin="8,1,0,0" VerticalAlignment="Center"
+                                                        Foreground="{DynamicResource TextMuted}" Visibility="{Binding CanOpen, Converter={StaticResource Visible}}" />
                                                 <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Foreground="{DynamicResource Text}" />
                                             </DockPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <TextBlock Text="{loc:T Dashboard.NoAlerts}" Style="{StaticResource Muted}" Visibility="{Binding Alerts.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                            <c:EmptyState Icon="check-circle" Title="{loc:T Dashboard.AllGood}" Text="{loc:T Dashboard.NoAlerts}" Margin="0,8"
+                                          Visibility="{Binding Alerts.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
                         </StackPanel>
                     </Border>
 
@@ -76,8 +150,11 @@
                             <ItemsControl ItemsSource="{Binding Birthdays}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <DockPanel Margin="0,0,0,10">
-                                            <c:Icon DockPanel.Dock="Left" Kind="gift" Width="17" Height="17" Margin="0,0,10,0" Foreground="{DynamicResource Accent}" />
+                                        <DockPanel Margin="0,0,0,10" Background="Transparent" Cursor="Hand">
+                                            <DockPanel.InputBindings>
+                                                <MouseBinding MouseAction="LeftClick" Command="{Binding DataContext.OpenChildCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                            </DockPanel.InputBindings>
+                                            <c:Icon DockPanel.Dock="Left" Kind="gift" Width="17" Height="17" Margin="0,0,10,0" Foreground="{DynamicResource Highlight}" />
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding NextBirthday, Converter={StaticResource Date}}" Style="{StaticResource Mono}" FontSize="12" VerticalAlignment="Center" />
                                             <StackPanel>
                                                 <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" />
@@ -91,7 +168,8 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <TextBlock Text="{loc:T Dashboard.NoBirthdays}" Style="{StaticResource Muted}" Visibility="{Binding Birthdays.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                            <c:EmptyState Icon="gift" Text="{loc:T Dashboard.NoBirthdays}" Margin="0,8"
+                                          Visibility="{Binding Birthdays.Count, Converter={StaticResource Visible}, ConverterParameter=invert}" />
                         </StackPanel>
                     </Border>
                 </c:ResponsiveGrid>

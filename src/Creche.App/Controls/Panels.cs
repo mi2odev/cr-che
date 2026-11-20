@@ -128,10 +128,47 @@ public sealed class StatCard : Control
         set => SetValue(ValueProperty, value);
     }
 
+    public static readonly DependencyProperty HintProperty = DependencyProperty.Register(nameof(Hint), typeof(string), typeof(StatCard));
+
     public string Icon
     {
         get => (string)GetValue(IconProperty);
         set => SetValue(IconProperty, value);
+    }
+
+    /// <summary>Optional small line under the figure ("of 42", "this month"...).</summary>
+    public string? Hint
+    {
+        get => (string?)GetValue(HintProperty);
+        set => SetValue(HintProperty, value);
+    }
+}
+
+/// <summary>Friendly "nothing here yet" block: icon, title, explanation and an optional action (the content).</summary>
+public sealed class EmptyState : ContentControl
+{
+    static EmptyState() => DefaultStyleKeyProperty.OverrideMetadata(typeof(EmptyState), new FrameworkPropertyMetadata(typeof(EmptyState)));
+
+    public static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(string), typeof(EmptyState), new PropertyMetadata("info"));
+    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(EmptyState));
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(EmptyState));
+
+    public string Icon
+    {
+        get => (string)GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
+    }
+
+    public string? Title
+    {
+        get => (string?)GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
+    }
+
+    public string? Text
+    {
+        get => (string?)GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
     }
 }
 
@@ -184,4 +221,14 @@ public static class Ico
     public static string GetKind(DependencyObject element) => (string)element.GetValue(KindProperty);
 
     public static void SetKind(DependencyObject element, string value) => element.SetValue(KindProperty, value);
+}
+
+/// <summary>Attached property: <c>c:Hint.Text="Search…"</c> shows a placeholder in an empty text box.</summary>
+public static class Hint
+{
+    public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(Hint), new PropertyMetadata(""));
+
+    public static string GetText(DependencyObject element) => (string)element.GetValue(TextProperty);
+
+    public static void SetText(DependencyObject element, string value) => element.SetValue(TextProperty, value);
 }

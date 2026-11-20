@@ -16,8 +16,21 @@ public sealed record AlertRow(string Text, string Tone, string? NavKey)
 
 public sealed record LabelBar(string Label, string Value, double Ratio);
 
-public sealed partial class DashboardViewModel(IDashboardService dashboard, ISettingsService settings) : PageViewModel
+public sealed partial class DashboardViewModel(IDashboardService dashboard, ISettingsService settings, ICurrentUser user) : PageViewModel
 {
+    /// <summary>"Good morning, Sarah" — depends on the time of day.</summary>
+    public string Greeting
+    {
+        get
+        {
+            string name = user.User?.DisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+            string key = DateTime.Now.Hour switch { < 12 => "Dashboard.GoodMorning", < 18 => "Dashboard.GoodAfternoon", _ => "Dashboard.GoodEvening" };
+            return Loc.T(key, name).Trim().TrimEnd(',', '،');
+        }
+    }
+
+    public ObservableCollection<QuickAction> Actions { get; } = [];
+
     public ObservableCollection<GroupMeter> Groups { get; } = [];
     public ObservableCollection<BirthdayItem> Birthdays { get; } = [];
     public ObservableCollection<AlertRow> Alerts { get; } = [];
@@ -31,9 +44,13 @@ public sealed partial class DashboardViewModel(IDashboardService dashboard, ISet
     [ObservableProperty] public partial string FeesDue { get; set; } = "–";
     [ObservableProperty] public partial string FeesOverdue { get; set; } = "–";
     [ObservableProperty] public partial string Received { get; set; } = "–";
+    [ObservableProperty] public partial double MarkedRatio { get; set; }
+    [ObservableProperty] public partial string AttendanceText { get; set; } = "";
+    [ObservableProperty] public partial bool AttendanceDone { get; set; }
 
     public override Task LoadAsync() => Run(async () =>
     {
+        if (App.Shell is { } shell) Actions.ReplaceWith(shell.AvailableActions);
         var data = await dashboard.GetAsync();
         string currency = (await settings.GetAsync()).Currency;
         Date = data.Date;
@@ -45,6 +62,12 @@ public sealed partial class DashboardViewModel(IDashboardService dashboard, ISet
         FeesDue = Money.Format(data.FeesDue, currency);
         FeesOverdue = Money.Format(data.FeesOverdue, currency);
         Received = Money.Format(data.ReceivedThisMonth, currency);
+        int expected = data.PresentToday + data.AbsentToday + data.NotMarkedToday;
+        MarkedRatio = expected == 0 ? 0 : (double)(data.PresentToday + data.AbsentToday) / expected;
+        AttendanceDone = expected > 0 && data.NotMarkedToday == 0;
+        AttendanceText = expected == 0
+            ? Loc.T("Dashboard.NoChildrenExpected")
+            : AttendanceDone ? Loc.T("Dashboard.AttendanceDone") : Loc.T("Dashboard.AttendanceLeft", data.NotMarkedToday);
 
         Groups.ReplaceWith(data.Groups.Select(g => new GroupMeter(g.Name, $"{g.Occupied} / {g.Capacity}",
             g.IsFull ? Loc.T("Groups.Full") : Loc.T("Groups.FreePlaces", g.Free),
@@ -69,6 +92,15 @@ public sealed partial class DashboardViewModel(IDashboardService dashboard, ISet
     {
         if (alert?.NavKey is { } key && App.Shell is { } shell && shell.CanNavigate(key)) shell.Navigate(key);
     }
+
+    [RelayCommand]
+    private void Go(string key)
+    {
+        if (App.Shell is { } shell && shell.CanNavigate(key)) shell.Navigate(key);
+    }
+
+    [RelayCommand]
+    private void RunAction(QuickAction? action) => App.Shell?.RunActionCommand.Execute(action);
 
     [RelayCommand]
     private void OpenChild(BirthdayItem? item)

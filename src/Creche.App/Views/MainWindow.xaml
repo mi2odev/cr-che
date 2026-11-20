@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Creche.App.Controls"
         xmlns:loc="clr-namespace:Creche.App.Services"
+        x:Name="root"
         Title="{Binding CrecheName}" Width="1280" Height="800" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="{StaticResource FontUi}" FontSize="13"
         FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}"
@@ -10,75 +11,186 @@
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="K" Command="{Binding SearchCommand}" />
         <KeyBinding Key="F5" Command="{Binding CurrentPage.RefreshCommand, FallbackValue={x:Null}}" />
+        <KeyBinding Key="F1" Command="{Binding ShowShortcutsCommand}" />
+        <KeyBinding Modifiers="Control" Key="B" Command="{Binding ToggleSidebarCommand}" />
+        <KeyBinding Modifiers="Control+Shift" Key="L" Command="{Binding ToggleThemeCommand}" />
+        <KeyBinding Modifiers="Alt" Key="Left" Command="{Binding GoBackCommand}" />
+        <KeyBinding Modifiers="Control" Key="OemPlus" Command="{Binding ZoomInCommand}" />
+        <KeyBinding Modifiers="Control" Key="Add" Command="{Binding ZoomInCommand}" />
+        <KeyBinding Modifiers="Control" Key="OemMinus" Command="{Binding ZoomOutCommand}" />
+        <KeyBinding Modifiers="Control" Key="Subtract" Command="{Binding ZoomOutCommand}" />
+        <KeyBinding Modifiers="Control" Key="D0" Command="{Binding ZoomResetCommand}" />
+        <KeyBinding Modifiers="Control" Key="NumPad0" Command="{Binding ZoomResetCommand}" />
+        <KeyBinding Modifiers="Control" Key="D1" Command="{Binding NavigateIndexCommand}" CommandParameter="0" />
+        <KeyBinding Modifiers="Control" Key="D2" Command="{Binding NavigateIndexCommand}" CommandParameter="1" />
+        <KeyBinding Modifiers="Control" Key="D3" Command="{Binding NavigateIndexCommand}" CommandParameter="2" />
+        <KeyBinding Modifiers="Control" Key="D4" Command="{Binding NavigateIndexCommand}" CommandParameter="3" />
+        <KeyBinding Modifiers="Control" Key="D5" Command="{Binding NavigateIndexCommand}" CommandParameter="4" />
+        <KeyBinding Modifiers="Control" Key="D6" Command="{Binding NavigateIndexCommand}" CommandParameter="5" />
+        <KeyBinding Modifiers="Control" Key="D7" Command="{Binding NavigateIndexCommand}" CommandParameter="6" />
+        <KeyBinding Modifiers="Control" Key="D8" Command="{Binding NavigateIndexCommand}" CommandParameter="7" />
+        <KeyBinding Modifiers="Control" Key="D9" Command="{Binding NavigateIndexCommand}" CommandParameter="8" />
     </Window.InputBindings>
+
+    <!-- The whole interface scales with Ctrl+= / Ctrl+- (remembered per PC). -->
     <Grid>
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+        </Grid.LayoutTransform>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="236" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+        <!-- ───────── Sidebar ───────── -->
+        <Border Grid.Column="0" Background="{DynamicResource Sidebar}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Width" Value="248" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCompact}" Value="True">
+                            <Setter Property="Width" Value="76" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <DockPanel Margin="12,16,12,12">
-                <DockPanel DockPanel.Dock="Top" Margin="6,0,6,14">
-                    <Grid Width="38" Height="38" DockPanel.Dock="Left" Margin="0,0,10,0">
+                <!-- Brand + collapse -->
+                <DockPanel DockPanel.Dock="Top" Margin="4,0,0,14">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Command="{Binding ToggleSidebarCommand}" ToolTip="{loc:T Shell.ToggleSidebar}"
+                            Visibility="{Binding IsCompact, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                        <c:Icon Kind="chevron-left" Width="16" Height="16" />
+                    </Button>
+                    <Grid Width="40" Height="40" DockPanel.Dock="Left">
                         <Image Source="/Resources/Images/logo.png" Visibility="{Binding LogoFile, Converter={StaticResource Visible}, ConverterParameter=invert}" />
-                        <c:Avatar FileName="{Binding LogoFile}" Width="38" Height="38" Background="Transparent"
+                        <c:Avatar FileName="{Binding LogoFile}" Width="40" Height="40" Background="Transparent"
                                   Visibility="{Binding LogoFile, Converter={StaticResource Visible}}" />
                     </Grid>
-                    <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H2}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <StackPanel VerticalAlignment="Center" Margin="10,0,6,0" Visibility="{Binding IsCompact, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                        <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H2}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{loc:T Shell.Tagline}" Style="{StaticResource Muted}" FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
                 </DockPanel>
+                <Button DockPanel.Dock="Top" Style="{StaticResource IconBtn}" Command="{Binding ToggleSidebarCommand}" ToolTip="{loc:T Shell.ToggleSidebar}"
+                        HorizontalAlignment="Center" Margin="0,-6,0,8" Visibility="{Binding IsCompact, Converter={StaticResource Visible}}">
+                    <c:Icon Kind="chevron-right" Width="16" Height="16" />
+                </Button>
 
-                <Button DockPanel.Dock="Top" Command="{Binding SearchCommand}" HorizontalContentAlignment="Stretch" Margin="0,0,0,10" Padding="10,7">
-                    <DockPanel Width="182">
-                        <TextBlock DockPanel.Dock="Right" Text="Ctrl+K" Style="{StaticResource Mono}" FontSize="10.5" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center" FontWeight="Normal" />
-                        <c:Icon DockPanel.Dock="Left" Kind="search" Width="14" Height="14" Foreground="{DynamicResource TextMuted}" Margin="0,0,8,0" />
-                        <TextBlock Text="{loc:T Search.Placeholder}" Foreground="{DynamicResource TextMuted}" FontWeight="Normal" />
+                <!-- Search / command palette -->
+                <Button DockPanel.Dock="Top" Command="{Binding SearchCommand}" HorizontalContentAlignment="Stretch" Margin="0,0,0,8" Padding="10,8"
+                        Background="{DynamicResource SurfaceAlt}" BorderBrush="Transparent" ToolTip="{loc:T Shell.SearchTip}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Kbd}" Padding="5,0"
+                                Visibility="{Binding IsCompact, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                            <TextBlock Text="Ctrl K" Style="{StaticResource Mono}" FontSize="10" Foreground="{DynamicResource TextMuted}" FontWeight="Normal" />
+                        </Border>
+                        <c:Icon DockPanel.Dock="Left" Kind="search" Width="15" Height="15" Foreground="{DynamicResource TextMuted}" Margin="0,0,9,0" />
+                        <TextBlock Text="{loc:T Search.Placeholder}" Foreground="{DynamicResource TextMuted}" FontWeight="Normal" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                   Visibility="{Binding IsCompact, Converter={StaticResource Visible}, ConverterParameter=invert}" />
                     </DockPanel>
                 </Button>
 
                 <!-- Signed-in user -->
-                <Border DockPanel.Dock="Bottom" Background="{DynamicResource SurfaceAlt}" CornerRadius="10" Padding="10,8" Margin="0,10,0,0">
-                    <DockPanel>
-                        <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding LogoutCommand}" ToolTip="{loc:T Shell.SignOut}">
-                            <c:Icon Kind="logout" Width="16" Height="16" />
-                        </Button>
-                        <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding ToggleThemeCommand}" ToolTip="{loc:T Settings.Theme}">
-                            <c:Icon Kind="{Binding ThemeIcon}" Width="16" Height="16" />
-                        </Button>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding UserName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Text="{Binding Role}" Style="{StaticResource Muted}" FontSize="11" />
-                        </StackPanel>
-                    </DockPanel>
+                <Border DockPanel.Dock="Bottom" Background="{DynamicResource SurfaceAlt}" CornerRadius="12" Padding="8" Margin="0,10,0,0">
+                    <StackPanel>
+                        <DockPanel>
+                            <c:Avatar DockPanel.Dock="Left" DisplayName="{Binding UserName}" Width="34" Height="34"
+                                      Background="{DynamicResource AccentSoft}" Foreground="{DynamicResource AccentStrong}" ToolTip="{Binding UserName}" />
+                            <StackPanel VerticalAlignment="Center" Margin="9,0,0,0" Visibility="{Binding IsCompact, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                                <TextBlock Text="{Binding UserName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Role}" Style="{StaticResource Muted}" FontSize="11" />
+                            </StackPanel>
+                        </DockPanel>
+                        <UniformGrid Margin="0,8,0,0">
+                            <UniformGrid.Style>
+                                <Style TargetType="UniformGrid">
+                                    <Setter Property="Rows" Value="1" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCompact}" Value="True">
+                                            <Setter Property="Rows" Value="4" />
+                                            <Setter Property="Columns" Value="1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </UniformGrid.Style>
+                            <Button Style="{StaticResource IconBtn}" Command="{Binding ToggleThemeCommand}" ToolTip="{loc:T Settings.Theme}">
+                                <c:Icon Kind="{Binding ThemeIcon}" Width="16" Height="16" />
+                            </Button>
+                            <Button Style="{StaticResource IconBtn}" Command="{Binding ZoomInCommand}" ToolTip="{loc:T Shell.ZoomIn}">
+                                <TextBlock Text="A+" FontWeight="Bold" FontSize="12" />
+                            </Button>
+                            <Button Style="{StaticResource IconBtn}" Command="{Binding ShowShortcutsCommand}" ToolTip="{loc:T Shortcuts.Title}">
+                                <c:Icon Kind="info" Width="16" Height="16" />
+                            </Button>
+                            <Button Style="{StaticResource IconBtn}" Command="{Binding LogoutCommand}" ToolTip="{loc:T Shell.SignOut}">
+                                <c:Icon Kind="logout" Width="16" Height="16" />
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
                 </Border>
 
-                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <!-- Navigation, grouped by section -->
+                <ListBox ItemsSource="{Binding NavView}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource NavItem}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VirtualizingPanel.IsVirtualizingWhenGrouping="False">
+                    <ListBox.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="10,12,0,4">
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}"
+                                                   Visibility="{Binding DataContext.IsCompact, ElementName=root, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                                        <Border Height="1" Background="{DynamicResource Border}" Margin="-4,0,6,0"
+                                                Visibility="{Binding DataContext.IsCompact, ElementName=root, Converter={StaticResource Visible}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="2,2">
-                                <c:Icon Kind="{Binding Icon}" Width="17" Height="17" Margin="0,0,11,0" />
-                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <StackPanel x:Name="row" Orientation="Horizontal" Margin="2,1" ToolTip="{Binding ToolTip}" Background="Transparent">
+                                <c:Icon x:Name="ico" Kind="{Binding Icon}" Width="18" Height="18" Margin="0,0,12,0" />
+                                <TextBlock x:Name="txt" Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding DataContext.IsCompact, ElementName=root}" Value="True">
+                                    <Setter TargetName="ico" Property="Margin" Value="0" />
+                                    <Setter TargetName="txt" Property="Visibility" Value="Collapsed" />
+                                    <Setter TargetName="row" Property="HorizontalAlignment" Value="Center" />
+                                    <Setter TargetName="row" Property="Margin" Value="0,1" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
         </Border>
 
-        <!-- Current page -->
+        <!-- ───────── Current page ───────── -->
         <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Focusable="False" />
 
-        <!-- Toasts -->
+        <!-- Thin activity bar while the page is loading or saving -->
+        <ProgressBar Grid.Column="1" VerticalAlignment="Top" Height="3" IsIndeterminate="True" BorderThickness="0"
+                     Background="Transparent" Foreground="{DynamicResource Accent}" IsHitTestVisible="False"
+                     Visibility="{Binding CurrentPage.IsBusy, FallbackValue=False, Converter={StaticResource Visible}}" />
+
+        <!-- Toasts: click to dismiss -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding Toasts.Items}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,20" Focusable="False">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border Background="{DynamicResource Surface}" BorderBrush="{Binding Kind, Converter={StaticResource StatusBrush}}" BorderThickness="1"
-                            CornerRadius="10" Margin="0,8,0,0" MaxWidth="420" MinWidth="260">
-                        <Border Background="{Binding Kind, Converter={StaticResource StatusBrush}, ConverterParameter=soft}" CornerRadius="9" Padding="14,10">
+                            CornerRadius="12" Margin="0,8,0,0" MaxWidth="440" MinWidth="280" Cursor="Hand" ToolTip="{loc:T Shell.Dismiss}">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.16" Color="#000000" />
+                        </Border.Effect>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding DataContext.Toasts.DismissCommand, ElementName=root}" CommandParameter="{Binding}" />
+                        </Border.InputBindings>
+                        <Border Background="{Binding Kind, Converter={StaticResource StatusBrush}, ConverterParameter=soft}" CornerRadius="11" Padding="14,11">
                             <DockPanel>
-                                <c:Icon DockPanel.Dock="Left" Kind="{Binding Icon}" Width="17" Height="17" Margin="0,1,10,0" VerticalAlignment="Top"
+                                <c:Icon DockPanel.Dock="Left" Kind="{Binding Icon}" Width="18" Height="18" Margin="0,0,11,0" VerticalAlignment="Top"
                                         Foreground="{Binding Kind, Converter={StaticResource StatusBrush}}" />
+                                <c:Icon DockPanel.Dock="Right" Kind="x" Width="13" Height="13" Margin="12,2,0,0" VerticalAlignment="Top" Foreground="{DynamicResource TextMuted}" />
                                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource Text}" />
                             </DockPanel>
                         </Border>

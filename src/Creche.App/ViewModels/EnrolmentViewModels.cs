@@ -18,7 +18,13 @@ public sealed partial class EnrolmentViewModel(IChildService children, ISettings
     [ObservableProperty] public partial string SchoolYear { get; set; } = "";
     [ObservableProperty] public partial string Tab { get; set; } = "waiting";
 
-    public override Task LoadAsync() => Run(async () =>
+    public override async Task LoadAsync()
+    {
+        await ReloadAsync();
+        if (TakeNewAction()) await Enrol();
+    }
+
+    private Task ReloadAsync() => Run(async () =>
     {
         Tab = App.State.Get("enrolment.tab", "waiting");
         SchoolYear = (await settings.GetAsync()).SchoolYear;

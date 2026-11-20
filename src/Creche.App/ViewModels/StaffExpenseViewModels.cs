@@ -182,7 +182,13 @@ public sealed partial class ExpensesViewModel(IExpenseService expenses, ISetting
         var saved = App.State.GetEnum<ExpenseCategory>("expenses.category");
         Category = Categories.FirstOrDefault(c => Equals(c.Value, saved)) ?? Categories[0];
         _ready = true;
-        return ReloadAsync();
+        return LoadThenAsync();
+    }
+
+    private async Task LoadThenAsync()
+    {
+        await ReloadAsync();
+        if (TakeNewAction()) await Edit(null);
     }
 
     partial void OnFromChanged(DateTime? value) => _ = ReloadAsync();

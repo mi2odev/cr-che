@@ -22,7 +22,7 @@
                         <ComboBox ItemsSource="{Binding Types}" SelectedValue="{Binding Type}" SelectedValuePath="Value" DisplayMemberPath="Label" />
                     </c:Field>
                     <c:Field DockPanel.Dock="Left" Label="{loc:T Activity.Time}" Width="76" Margin="0,0,10,0">
-                        <TextBox Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource FontMono}" ToolTip="HH:mm" />
+                        <TextBox Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource FontMono}" ToolTip="HH:mm" c:Hint.Text="{loc:T Activity.Now}" />
                     </c:Field>
                     <c:Field Label="{loc:T Activity.Note}" Margin="0">
                         <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />

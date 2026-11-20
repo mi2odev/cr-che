@@ -3,42 +3,61 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Creche.App.Controls"
         xmlns:loc="clr-namespace:Creche.App.Services"
-        Title="{Binding CrecheName}" Width="420" SizeToContent="Height" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Title="{Binding CrecheName}" Width="480" SizeToContent="Height" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="{StaticResource FontUi}" FontSize="13"
         FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}"
         TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Icon="/Resources/Images/app.ico">
-    <StackPanel Margin="36,30,36,30">
-        <Grid Width="76" Height="76" HorizontalAlignment="Center">
-            <Image Source="/Resources/Images/logo.png" Visibility="{Binding LogoFile, Converter={StaticResource Visible}, ConverterParameter=invert}" />
-            <c:Avatar FileName="{Binding LogoFile}" Width="76" Height="76" Background="Transparent"
-                      Visibility="{Binding LogoFile, Converter={StaticResource Visible}}" />
-        </Grid>
-        <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H1}" TextAlignment="Center" Margin="0,14,0,2" TextWrapping="Wrap" />
-        <TextBlock Text="{loc:T Login.Subtitle}" Style="{StaticResource Muted}" TextAlignment="Center" Margin="0,0,0,22" />
+    <StackPanel Margin="28,26,28,20">
+        <Border Style="{StaticResource RaisedCard}" Padding="34,30,34,28">
+            <StackPanel>
+                <Grid Width="80" Height="80" HorizontalAlignment="Center">
+                    <Ellipse Fill="{DynamicResource HighlightSoft}" Margin="-8" />
+                    <Image Source="/Resources/Images/logo.png" Visibility="{Binding LogoFile, Converter={StaticResource Visible}, ConverterParameter=invert}" />
+                    <c:Avatar FileName="{Binding LogoFile}" Width="80" Height="80" Background="Transparent"
+                              Visibility="{Binding LogoFile, Converter={StaticResource Visible}}" />
+                </Grid>
+                <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H1}" TextAlignment="Center" Margin="0,20,0,4" TextWrapping="Wrap" />
+                <TextBlock Text="{loc:T Login.Subtitle}" Style="{StaticResource Muted}" FontSize="13" TextAlignment="Center" Margin="0,0,0,24" />
 
-        <c:Field Label="{loc:T Login.Username}">
-            <TextBox x:Name="username" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
-        </c:Field>
-        <c:Field Label="{loc:T Login.Password}">
-            <PasswordBox x:Name="password" loc:PasswordHelper.Password="{Binding Password, Mode=TwoWay}" />
-        </c:Field>
+                <Border Style="{StaticResource Callout}" Background="{DynamicResource InfoSoft}" Margin="0,0,0,14"
+                        Visibility="{Binding ShowFirstRunHint, Converter={StaticResource Visible}}">
+                    <DockPanel>
+                        <c:Icon DockPanel.Dock="Left" Kind="info" Width="16" Height="16" Margin="0,1,9,0" VerticalAlignment="Top" Foreground="{DynamicResource Info}" />
+                        <TextBlock Text="{loc:T Login.FirstRun}" Foreground="{DynamicResource Info}" TextWrapping="Wrap" />
+                    </DockPanel>
+                </Border>
 
-        <Border Background="{DynamicResource DangerSoft}" CornerRadius="8" Padding="10,7" Margin="0,0,0,12"
-                Visibility="{Binding Error, Converter={StaticResource Visible}}">
-            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Danger}" TextWrapping="Wrap" />
+                <c:Field Label="{loc:T Login.Username}">
+                    <TextBox x:Name="username" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" MinHeight="42" FontSize="14"
+                             c:Ico.Kind="user" c:Hint.Text="{loc:T Login.UsernameHint}" />
+                </c:Field>
+                <c:Field Label="{loc:T Login.Password}" Margin="0,0,0,6">
+                    <PasswordBox x:Name="password" loc:PasswordHelper.Password="{Binding Password, Mode=TwoWay}" MinHeight="42" FontSize="14" />
+                </c:Field>
+                <DockPanel x:Name="capsLock" Margin="0,2,0,0" Visibility="Collapsed">
+                    <c:Icon DockPanel.Dock="Left" Kind="alert" Width="13" Height="13" Margin="0,0,6,0" Foreground="{DynamicResource Warning}" />
+                    <TextBlock Text="{loc:T Login.CapsLock}" Foreground="{DynamicResource Warning}" FontSize="12" />
+                </DockPanel>
+
+                <Border Style="{StaticResource Callout}" Background="{DynamicResource DangerSoft}" Margin="0,12,0,0"
+                        Visibility="{Binding Error, Converter={StaticResource Visible}}">
+                    <DockPanel>
+                        <c:Icon DockPanel.Dock="Left" Kind="alert" Width="16" Height="16" Margin="0,1,9,0" VerticalAlignment="Top" Foreground="{DynamicResource Danger}" />
+                        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Danger}" TextWrapping="Wrap" />
+                    </DockPanel>
+                </Border>
+
+                <Button Style="{StaticResource Primary}" Content="{loc:T Login.SignIn}" Command="{Binding LoginCommand}" IsDefault="True" c:Ico.Kind="login"
+                        MinHeight="44" FontSize="14" Margin="0,18,0,0" />
+            </StackPanel>
         </Border>
-        <Border Background="{DynamicResource InfoSoft}" CornerRadius="8" Padding="10,7" Margin="0,0,0,12"
-                Visibility="{Binding ShowFirstRunHint, Converter={StaticResource Visible}}">
-            <TextBlock Text="{loc:T Login.FirstRun}" Foreground="{DynamicResource Info}" TextWrapping="Wrap" />
-        </Border>
 
-        <Button Style="{StaticResource Primary}" Content="{loc:T Login.SignIn}" Command="{Binding LoginCommand}" IsDefault="True" c:Ico.Kind="login" MinHeight="38" />
-
-        <DockPanel Margin="0,22,0,0">
-            <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Click="OnToggleTheme" ToolTip="{loc:T Settings.Theme}">
-                <c:Icon Kind="sun" Width="16" Height="16" />
+        <DockPanel Margin="4,16,4,0">
+            <Button DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Click="OnToggleTheme" ToolTip="{loc:T Settings.Theme}">
+                <c:Icon x:Name="themeIcon" Kind="moon" Width="16" Height="16" />
             </Button>
-            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Label" Width="150" HorizontalAlignment="Left" />
+            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Label" Width="160" HorizontalAlignment="Left"
+                      ToolTip="{loc:T Settings.Language}" />
         </DockPanel>
     </StackPanel>
 </Window>

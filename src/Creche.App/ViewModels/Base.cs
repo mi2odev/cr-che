@@ -74,6 +74,17 @@ public abstract class PageViewModel : ViewModelBase
     /// <summary>Optional argument passed by whoever navigated here (for example a child id to open).</summary>
     public object? Parameter { get; set; }
 
+    /// <summary>Parameter value asking a page to open its "new record" form as soon as it is shown.</summary>
+    public const string NewAction = "new";
+
+    /// <summary>True (once) when the page was opened by a quick action asking for a new record.</summary>
+    protected bool TakeNewAction()
+    {
+        if (Parameter as string != NewAction) return false;
+        Parameter = null;
+        return true;
+    }
+
     public virtual Task LoadAsync() => Task.CompletedTask;
 
     /// <summary>F5 reloads whichever page is shown.</summary>

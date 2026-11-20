@@ -16,10 +16,11 @@
                 </StackPanel>
             </DockPanel>
             <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=250}" Width="280" Margin="0,0,12,6" ToolTip="{loc:T Common.Search}" />
+                <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=250}" Width="280" Margin="0,0,12,6" c:Ico.Kind="search" c:Hint.Text="{loc:T Common.Search}" />
                 <CheckBox Content="{loc:T Common.ShowArchived}" IsChecked="{Binding IncludeArchived}" Margin="0,0,0,6" />
             </WrapPanel>
             <Border Style="{StaticResource Card}" Padding="6">
+                <Grid>
                 <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" loc:GridState.Key="families">
                     <DataGrid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenCommand}" />
@@ -33,6 +34,11 @@
                         <DataGridTextColumn Header="{loc:T Payments.AmountDue}" Binding="{Binding Balance, Converter={StaticResource Money}}" SortMemberPath="Balance" Width="150" ElementStyle="{StaticResource CellNumber}" />
                     </DataGrid.Columns>
                 </DataGrid>
+                <c:EmptyState Icon="users" Title="{loc:T Families.EmptyTitle}" Text="{loc:T Families.EmptyText}"
+                              Visibility="{Binding Items.Count, Converter={StaticResource Visible}, ConverterParameter=invert}">
+                    <Button Style="{StaticResource Primary}" Command="{Binding AddCommand}" c:Ico.Kind="plus" Content="{loc:T Families.New}" />
+                </c:EmptyState>
+                </Grid>
             </Border>
         </DockPanel>
     </DataTemplate>

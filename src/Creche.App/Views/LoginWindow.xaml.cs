@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using Creche.App.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +21,23 @@ public partial class LoginWindow : Window
             else password.Focus();
         };
         Closed += (_, _) => ((App)WpfApp.Current).OnWindowClosed(this);
+
+        // Warn about Caps Lock while typing the password: the most common reason for "wrong password".
+        PreviewKeyDown += (_, _) => UpdateCapsLock();
+        PreviewKeyUp += (_, _) => UpdateCapsLock();
+        password.GotKeyboardFocus += (_, _) => UpdateCapsLock();
+        password.LostKeyboardFocus += (_, _) => UpdateCapsLock();
+        UpdateThemeIcon();
     }
 
-    private void OnToggleTheme(object sender, RoutedEventArgs e) => App.Themes.Toggle();
+    private void UpdateCapsLock()
+        => capsLock.Visibility = password.IsKeyboardFocused && Keyboard.IsKeyToggled(Key.CapsLock) ? Visibility.Visible : Visibility.Collapsed;
+
+    private void UpdateThemeIcon() => themeIcon.Kind = App.Themes.IsDark ? "sun" : "moon";
+
+    private void OnToggleTheme(object sender, RoutedEventArgs e)
+    {
+        App.Themes.Toggle();
+        UpdateThemeIcon();
+    }
 }

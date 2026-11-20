@@ -72,8 +72,8 @@
                                         <Border BorderBrush="{DynamicResource Border}" BorderThickness="0,0,0,1" Padding="10,8">
                                             <DockPanel>
                                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                                    <TextBox Text="{Binding CheckIn, UpdateSourceTrigger=PropertyChanged}" Width="62" FontFamily="{StaticResource FontMono}" TextAlignment="Center" ToolTip="{loc:T Attendance.CheckIn}" />
-                                                    <TextBox Text="{Binding CheckOut, UpdateSourceTrigger=PropertyChanged}" Width="62" FontFamily="{StaticResource FontMono}" TextAlignment="Center" Margin="5,0,10,0" ToolTip="{loc:T Attendance.CheckOut}" />
+                                                    <TextBox Text="{Binding CheckIn, UpdateSourceTrigger=PropertyChanged}" Width="62" FontFamily="{StaticResource FontMono}" TextAlignment="Center" ToolTip="{loc:T Attendance.CheckIn}" c:Hint.Text="--:--" />
+                                                    <TextBox Text="{Binding CheckOut, UpdateSourceTrigger=PropertyChanged}" Width="62" FontFamily="{StaticResource FontMono}" TextAlignment="Center" Margin="5,0,10,0" ToolTip="{loc:T Attendance.CheckOut}" c:Hint.Text="--:--" />
                                                     <Button Style="{StaticResource SuccessBtn}" Content="{loc:T Enum.StaffAttendanceStatus.Present}" Margin="0,0,6,0"
                                                             Command="{Binding DataContext.MarkPresentCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
                                                     <Button Style="{StaticResource DangerBtn}" Content="{loc:T Enum.StaffAttendanceStatus.Absent}" Margin="0,0,6,0"
