@@ -40,6 +40,7 @@ public sealed class SettingsService(IDbContextFactory<CrecheDbContext> factory, 
         settings.LatePickupGraceMinutes = Math.Max(0, settings.LatePickupGraceMinutes);
         settings.LatePickupBlockMinutes = Math.Max(1, settings.LatePickupBlockMinutes);
         settings.BackupRetentionCount = Math.Clamp(settings.BackupRetentionCount, 1, 365);
+        settings.AutoLockMinutes = Math.Clamp(settings.AutoLockMinutes, 0, CrecheSettings.MaxAutoLockMinutes);
 
         await using var db = await OpenAsync();
         string json = JsonSerializer.Serialize(settings);

@@ -37,6 +37,7 @@ public partial class App : System.Windows.Application
     public static PrintService Printer { get; private set; } = null!;
     public static ILogger Log { get; private set; } = null!;
     public static ShellViewModel? Shell { get; private set; }
+    public static IdleLock Idle { get; private set; } = null!;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -68,6 +69,7 @@ public partial class App : System.Windows.Application
             builder.Services.AddSingleton<ToastService>();
             builder.Services.AddSingleton<DialogService>();
             builder.Services.AddSingleton<PrintService>();
+            builder.Services.AddSingleton<IdleLock>();
             _host = builder.Build();
             await _host.StartAsync();
 
@@ -78,6 +80,7 @@ public partial class App : System.Windows.Application
             State = Services.GetRequiredService<UiState>();
             Themes = Services.GetRequiredService<ThemeService>();
             Printer = Services.GetRequiredService<PrintService>();
+            Idle = Services.GetRequiredService<IdleLock>();
             var paths = Services.GetRequiredService<IAppPaths>();
             ImageStore.Folder = paths.ImagesFolder;
 
@@ -110,6 +113,8 @@ public partial class App : System.Windows.Application
             _backupTimer.Start();
 
             await RefreshSettingsAsync();
+            Idle.IdleLimitReached += (_, _) => Lock(idle: true);
+            Idle.Start();
             ShowLogin();
         }
         catch (Exception ex)
@@ -124,6 +129,7 @@ public partial class App : System.Windows.Application
     {
         var settings = await Services.GetRequiredService<ISettingsService>().GetAsync();
         MoneyConverter.Currency = settings.Currency;
+        Idle.Minutes = settings.AutoLockMinutes;
         return settings;
     }
 
@@ -145,9 +151,11 @@ public partial class App : System.Windows.Application
         }
     }
 
-    public void ShowLogin()
+    /// <param name="username">User name to put in the sign-in form; null = the last one used, "" = empty (switch user).</param>
+    /// <param name="notice">Message shown above the form, for example why the session was locked.</param>
+    public void ShowLogin(string? username = null, string? notice = null)
     {
-        var login = new LoginWindow();
+        var login = new LoginWindow(username, notice);
         MainWindow = login;
         login.Show();
     }
@@ -163,12 +171,35 @@ public partial class App : System.Windows.Application
         _ = Shell.StartAsync();
     }
 
-    public void SignOut()
+    public void SignOut() => EndSession(null, null);
+
+    /// <summary>
+    /// Locks the session: signs the current user out and goes back to the sign-in screen, saying who was signed in.
+    /// A manual lock (Ctrl+L) leaves the user name empty for the next person; an idle lock keeps it for the same
+    /// person coming back. Each user returns to the page they last had open.
+    /// </summary>
+    public void Lock(bool idle)
     {
+        var user = Services.GetRequiredService<ICurrentUser>().User;
+        if (user is null) return;
+        Log.LogInformation("Session of {User} locked ({Reason})", user.Username, idle ? "inactivity" : "manual");
+        string notice = idle
+            ? Loc.T("Login.AutoLocked", user.DisplayName, Idle.Minutes)
+            : Loc.T("Login.Locked", user.DisplayName);
+        EndSession(idle ? user.Username : "", notice);
+    }
+
+    private void EndSession(string? username, string? notice)
+    {
+        // Close dialogs and print previews first, newest first, so nothing of the previous user stays on screen.
+        // A dialog closed this way counts as cancelled: what was typed in it is not saved.
+        foreach (var window in Windows.OfType<Window>().Where(w => !ReferenceEquals(w, MainWindow)).Reverse().ToList())
+            window.Close();
+        Shell?.Detach();
         Services.GetRequiredService<IAuthService>().Logout();
         var previous = MainWindow;
         Shell = null;
-        ShowLogin();
+        ShowLogin(username, notice);
         previous?.Close();
     }
 
@@ -221,6 +252,7 @@ public partial class App : System.Windows.Application
     protected override void OnExit(ExitEventArgs e)
     {
         _backupTimer?.Stop();
+        Idle?.Stop();
         if (_host is not null)
         {
             State?.Save();

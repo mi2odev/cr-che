@@ -62,6 +62,15 @@ public sealed class CrecheSettings
     public bool AutoBackupEnabled { get; set; } = true;
     public int BackupRetentionCount { get; set; } = 14;
 
+    /// <summary>
+    /// Minutes without keyboard or mouse activity before the application locks itself and returns to the sign-in
+    /// screen, so the next person at the shared PC cannot use the previous account. 0 turns it off.
+    /// </summary>
+    public int AutoLockMinutes { get; set; } = DefaultAutoLockMinutes;
+
+    public const int DefaultAutoLockMinutes = 10;
+    public const int MaxAutoLockMinutes = 240;
+
     public LatePickupRule LatePickupRule => new(LatePickupEnabled, LatePickupGraceMinutes, LatePickupBlockMinutes, LatePickupFeePerBlock);
 
     /// <summary>School years start in September: 2026-11 → "2026/2027", 2027-03 → "2026/2027".</summary>

@@ -20,13 +20,18 @@ public sealed partial class LoginViewModel(IAuthService auth, ISettingsService s
     [ObservableProperty] public partial string? LogoFile { get; set; }
     [ObservableProperty] public partial bool ShowFirstRunHint { get; set; }
     [ObservableProperty] public partial Option<string>? Language { get; set; }
+    /// <summary>Shown above the form, for example "the session of X was locked".</summary>
+    [ObservableProperty] public partial string Notice { get; set; } = "";
+
+    /// <summary>User name to start with: null = the last one used, "" = empty (another person is signing in).</summary>
+    public string? PresetUsername { get; set; }
 
     public IReadOnlyList<Option<string>> Languages => Loc.Languages;
 
     public async Task LoadAsync()
     {
         Language = Loc.Languages.FirstOrDefault(l => l.Value == Loc.Instance.Language);
-        Username = App.State.Get("login.username", "");
+        Username = PresetUsername ?? App.State.Get("login.username", "");
         await Run(async () =>
         {
             var config = await settings.GetAsync();
@@ -157,10 +162,14 @@ public sealed partial class ShellViewModel : ViewModelBase
     public ObservableCollection<NavItem> Items { get; } = [];
     public ToastService Toasts => App.Toasts;
     public string UserName { get; }
+    /// <summary>Window title: the crèche and who is signed in, so it is always clear whose account is open.</summary>
+    public string WindowTitle => UserName.Length == 0 ? CrecheName : $"{CrecheName} — {UserName}";
     public string ThemeIcon => App.Themes.IsDark ? "sun" : "moon";
 
     [ObservableProperty] public partial string Role { get; set; }
-    [ObservableProperty] public partial string CrecheName { get; set; } = "";
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WindowTitle))]
+    public partial string CrecheName { get; set; } = "";
     [ObservableProperty] public partial string? LogoFile { get; set; }
     [ObservableProperty] public partial NavItem? Selected { get; set; }
     [ObservableProperty] public partial PageViewModel? CurrentPage { get; set; }
@@ -243,12 +252,15 @@ public sealed partial class ShellViewModel : ViewModelBase
         }
     }
 
+    /// <summary>Called when the session ends (sign out or lock).</summary>
+    public void Detach() => Loc.Instance.LanguageChanged -= OnLanguageChanged;
+
     [RelayCommand]
-    private void Logout()
-    {
-        Loc.Instance.LanguageChanged -= OnLanguageChanged;
-        ((App)WpfApp.Current).SignOut();
-    }
+    private void Logout() => ((App)WpfApp.Current).SignOut();
+
+    /// <summary>Lock / switch user (Ctrl+L): back to the sign-in screen so someone else can sign in.</summary>
+    [RelayCommand]
+    private void Lock() => ((App)WpfApp.Current).Lock(idle: false);
 }
 
 public sealed partial class SearchViewModel : DialogViewModel

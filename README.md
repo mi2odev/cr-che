@@ -28,7 +28,8 @@ To try the application with sample data (3 groups, 9 children, parents, 4 fee pl
 `"SeedDemoData": true` in `src/Creche.App/appsettings.json` **before the first start**. Demo data is only
 inserted into an empty database. The admin account is always created, with or without demo data.
 
-Useful keys: **Ctrl+K** global search, **F5** reload the current screen, **Esc** close a dialog.
+Useful keys: **Ctrl+K** global search, **Ctrl+L** lock / switch user, **F5** reload the current screen, **Esc** close a
+dialog.
 
 ## Where the data lives
 
@@ -103,6 +104,30 @@ every service), not only by hiding screens.
 
 Users are disabled, never deleted, and there is always at least one active admin.
 
+## Sharing the PC (several people, one computer)
+
+The application runs on one PC, so people take turns: an educator records attendance, then the director takes a
+payment, and so on. Everyone has their **own user in the application**; they do not need their own Windows account.
+
+- **Lock / switch user**: the lock button next to your name (or **Ctrl+L**) goes back to the sign-in screen
+  straight away, with an empty user name for the next person. The screen says who locked it. Each user comes back
+  to the page they last had open.
+- **Automatic lock**: after 10 minutes with no keyboard or mouse activity on the PC, the application locks itself
+  so nobody finds the previous person's account still open. The delay is set in Settings → Crèche → Security
+  (0 = never). Open dialogs are closed first and count as cancelled, so anything typed in them and not saved is
+  lost. Open/save-file and print dialogs are cancelled too.
+- **Sign out** (the arrow button) does the same as lock but keeps the last user name in the form.
+- The window title always shows who is signed in.
+
+**Use one Windows account for the crèche PC.** The data folder is under `%LOCALAPPDATA%`, which is different for
+each Windows account: with two Windows accounts each would see its own, separate database. Only one copy of the
+application can run on the PC at a time, even across Windows accounts (see Troubleshooting). If you really need
+several Windows accounts, point all of them at one shared folder in `appsettings.json` (for example
+`"DataFolder": "C:\\ProgramData\\CrecheManager"`) and give every account write access to it.
+
+Do **not** put the database on a network share to use it from two PCs at the same time: SQLite over a network
+share can corrupt the file. Working from several PCs at once would need a client/server version.
+
 ## How the money works
 
 - Every amount is a `decimal`, rounded to 2 places (half away from zero). Currency is a setting (default `DA`).
@@ -147,8 +172,8 @@ dotnet test
 ./scripts/test.ps1
 ```
 
-98 tests cover fee calculation, sibling discount, partial payments and balances, attendance rules, group
-capacity, role checks, soft delete, backup/restore and the CSV and money helpers. They run the real services
+104 tests cover fee calculation, sibling discount, partial payments and balances, attendance rules, group
+capacity, role checks, soft delete, backup/restore, the auto-lock setting and the CSV and money helpers. They run the real services
 against a real SQLite database (in memory, schema created by the migrations) so transactions, foreign keys and
 unique indexes are exercised. The backup tests use a temporary database file.
 

@@ -82,6 +82,15 @@
                             <TextBlock Text="{loc:T Settings.LateHelp}" Style="{StaticResource Muted}" />
                         </StackPanel>
                     </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{loc:T Settings.Security}" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <c:Field Label="{loc:T Settings.AutoLock}" Width="320" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Settings.AutoLockMinutes, Converter={StaticResource Int}}" FontFamily="{StaticResource FontMono}" />
+                </c:Field>
+                            <TextBlock Text="{loc:T Settings.AutoLockHelp}" Style="{StaticResource Muted}" />
+                        </StackPanel>
+                    </Border>
                     <Button Style="{StaticResource Primary}" Content="{loc:T Common.Save}" Command="{Binding SaveCommand}" c:Ico.Kind="save" HorizontalAlignment="Left" MinWidth="130" />
                 </StackPanel>
                 <StackPanel MaxWidth="820" MinWidth="620" HorizontalAlignment="Left" Visibility="{Binding Tab, Converter={StaticResource IsVisible}, ConverterParameter=fees}">

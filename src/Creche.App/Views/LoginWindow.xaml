@@ -16,6 +16,14 @@
         <TextBlock Text="{Binding CrecheName}" Style="{StaticResource H1}" TextAlignment="Center" Margin="0,14,0,2" TextWrapping="Wrap" />
         <TextBlock Text="{loc:T Login.Subtitle}" Style="{StaticResource Muted}" TextAlignment="Center" Margin="0,0,0,22" />
 
+        <Border Background="{DynamicResource InfoSoft}" CornerRadius="8" Padding="10,8" Margin="0,0,0,14"
+                Visibility="{Binding Notice, Converter={StaticResource Visible}}">
+            <DockPanel>
+                <c:Icon DockPanel.Dock="Left" Kind="lock" Width="15" Height="15" Margin="0,1,9,0" VerticalAlignment="Top" Foreground="{DynamicResource Info}" />
+                <TextBlock Text="{Binding Notice}" Foreground="{DynamicResource Info}" TextWrapping="Wrap" />
+            </DockPanel>
+        </Border>
+
         <c:Field Label="{loc:T Login.Username}">
             <TextBox x:Name="username" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
         </c:Field>

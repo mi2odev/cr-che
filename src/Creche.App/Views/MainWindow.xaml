@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:Creche.App.Controls"
         xmlns:loc="clr-namespace:Creche.App.Services"
-        Title="{Binding CrecheName}" Width="1280" Height="800" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterScreen"
+        Title="{Binding WindowTitle}" Width="1280" Height="800" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="{StaticResource FontUi}" FontSize="13"
         FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}"
         TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Icon="/Resources/Images/app.ico">
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="K" Command="{Binding SearchCommand}" />
+        <KeyBinding Modifiers="Control" Key="L" Command="{Binding LockCommand}" />
         <KeyBinding Key="F5" Command="{Binding CurrentPage.RefreshCommand, FallbackValue={x:Null}}" />
     </Window.InputBindings>
     <Grid>
@@ -42,6 +43,9 @@
                     <DockPanel>
                         <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding LogoutCommand}" ToolTip="{loc:T Shell.SignOut}">
                             <c:Icon Kind="logout" Width="16" Height="16" />
+                        </Button>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding LockCommand}" ToolTip="{loc:T Shell.Lock}">
+                            <c:Icon Kind="lock" Width="16" Height="16" />
                         </Button>
                         <Button DockPanel.Dock="Right" Style="{StaticResource Ghost}" Command="{Binding ToggleThemeCommand}" ToolTip="{loc:T Settings.Theme}">
                             <c:Icon Kind="{Binding ThemeIcon}" Width="16" Height="16" />

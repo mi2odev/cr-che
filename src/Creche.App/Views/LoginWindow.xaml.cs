@@ -6,11 +6,17 @@ namespace Creche.App.Views;
 
 public partial class LoginWindow : Window
 {
-    public LoginWindow()
+    public LoginWindow() : this(null, null) { }
+
+    /// <param name="presetUsername">null = last user name used, "" = empty (switch user).</param>
+    /// <param name="notice">Optional message above the form (session locked, ...).</param>
+    public LoginWindow(string? presetUsername, string? notice)
     {
         InitializeComponent();
         Creche.App.Services.Loc.Apply(this);
         var viewModel = ActivatorUtilities.CreateInstance<LoginViewModel>(App.Services);
+        viewModel.PresetUsername = presetUsername;
+        viewModel.Notice = notice ?? "";
         DataContext = viewModel;
         SourceInitialized += (_, _) => App.Themes.ApplyTitleBar(this);
         Loaded += async (_, _) =>
